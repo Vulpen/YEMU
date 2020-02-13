@@ -4,7 +4,13 @@ using System.Text;
 
 namespace Y86Emulator
 {
-    class ProcessorStage
+    abstract class ProcessorStage
     {
+        private PipelineRegisters Input;
+        private PipelineRegisters Output;
+
+        public abstract bool Execute();
+
+        public abstract void Reset();
     }
 }

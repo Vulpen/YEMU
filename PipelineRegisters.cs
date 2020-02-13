@@ -4,11 +4,13 @@ using System.Text;
 
 namespace Y86Emulator
 {
-    class PipelineRegisters
+    abstract class PipelineRegisters
     {
         //InitializeRegisters
         //Dict<string, int64> Registers
         //ClearRegisters
+        //WriteRegister
+        //ReadRegister
 
     }
 }
