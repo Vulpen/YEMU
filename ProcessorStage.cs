@@ -50,9 +50,22 @@ namespace Y86Emulator
                     return false;
                 case (3):
                     //irmovq
+                    OutputRegisters.WriteRegister(3, (int)ERegisters.icode);
+                    OutputRegisters.WriteRegister(0, (int)ERegisters.ifun);
+
+                    OutputRegisters.WriteRegister( InputRegisters.ReadRegister((int)DRegisters.valC), (int)ERegisters.valC);
+                    OutputRegisters.WriteRegister((int)DRegisters.rB, (int)ERegisters.dstE);
                     return false;
                 case (4):
                     //rmmovq
+                    OutputRegisters.WriteRegister(4, (int)ERegisters.icode);
+                    OutputRegisters.WriteRegister(0, (int)ERegisters.ifun);
+
+                    OutputRegisters.WriteRegister( registerFile.ReadRegister((int)InputRegisters.ReadRegister((int)DRegisters.rA)), (int)ERegisters.valA);
+                    OutputRegisters.WriteRegister( registerFile.ReadRegister((int)InputRegisters.ReadRegister((int)DRegisters.rB)), (int)ERegisters.valB);
+                    OutputRegisters.WriteRegister(InputRegisters.ReadRegister((int)DRegisters.valC), (int)ERegisters.valC);
+                    OutputRegisters.WriteRegister((int)DRegisters.rB, (int)ERegisters.dstM);
+
                     return false;
                 case (5):
                     //mrmovq
