@@ -4,9 +4,44 @@ namespace Y86SEQEmulator
 {
     class SEQInternalRegisters : IRegister
     {
+        public enum Registers
+        {
+            iCode = 0,
+            iFun,
+            rA,
+            rB,
+            valC,
+            valP,
+            valA,
+            valB,
+            dstE,
+            dstM,
+            srcA,
+            srcB,
+            Cnd,
+            valE,
+            Stat,
+            valM,
+            newPC,
+            PC
+        }
+        private Int64[] DataArray;
+        private const int NumRegisters = 18;
+
+        public SEQInternalRegisters()
+        {
+            DataArray = new Int64[NumRegisters];
+        }
         public long ReadRegister(long address)
         {
-            throw new NotImplementedException();
+            if(address < NumRegisters)
+            {
+                return DataArray[address];
+            }
+            else
+            {
+                throw new Exception();
+            }
         }
 
         public bool Reset()
@@ -51,6 +86,8 @@ namespace Y86SEQEmulator
                 case ("VALM"):
                     break;
                 case ("NEWPC"):
+                    break;
+                case ("PC"):
                     break;
             }
             throw new NotImplementedException();

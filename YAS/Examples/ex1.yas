@@ -1,0 +1,3 @@
+﻿addq %rax, %rbx
+subq $60, $59
+xorq $0x5f,
