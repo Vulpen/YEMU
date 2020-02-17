@@ -66,6 +66,7 @@ namespace YAS
 
         public Keywords()
         {
+            keys = new List<Token>();
             AddToken(TokenTypes.OpInstruction, "addq");
             AddToken(TokenTypes.OpInstruction, "subq");
             AddToken(TokenTypes.OpInstruction, "andq");
@@ -133,7 +134,7 @@ namespace YAS
     {
         private Keywords YKeywords;
 
-        Parser()
+        public Parser()
         {
             YKeywords = new Keywords();
         }
@@ -149,28 +150,55 @@ namespace YAS
             {
                 return null;
             }
+
+            for(int i = 0; i < line.Length; i++)
+            {
+                line[i].TrimEnd(',');
+            }
+
             Token[] ParsedTokens = new Token[line.Length];
 
+            SimpleKeywordParse(line, out ParsedTokens);
             return null;
         }
 
         private bool SimpleKeywordParse(string[] units, out Token[] tokens)
         {
+
             tokens = new Token[units.Length];
+
             for(int i = 0; i < units.Length; i++)
             {
                 Token temp;
                 if (YKeywords.IsKeyword(units[i], out temp)){
                     tokens[i] = temp;
                 }
+                else
+                {
+                    //The first instruction can also be a label
+                    //Find if it is an 'Unknown', we can't always tell if immediate or an 'unknown' variable or label
+                    //$ indicates immediate, 0x after that indicates HEX
+
+                    //throw parse exception here!
+                    return false;
+                }
             }
-            tokens = null;
-            return false;
+            return true;
         }
 
         private bool ContextParse(Token[] tokens_in, out Token[] tokens_out)
         {
+            Token firstToken = tokens_in[0];
             tokens_out = null;
+            switch (firstToken.Type)
+            {
+                case ((int)TokenTypes.OpInstruction):
+                    break;
+
+                default:
+                    //Throw Exception here!
+                    break;
+            }
             return false;
         }
     }

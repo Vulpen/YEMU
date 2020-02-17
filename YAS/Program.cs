@@ -7,7 +7,8 @@ namespace YAS
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Parser YParser = new Parser();
+            YParser.ParseString("addq %rax, %rcx");
         }
     }
 }
