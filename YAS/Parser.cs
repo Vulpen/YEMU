@@ -9,6 +9,7 @@ namespace YAS
         Instruction = 0,
         OpInstruction,
         JumpInstruction,
+        MoveInstruction,
         Register,
         Immediate,
         Label,
@@ -79,10 +80,10 @@ namespace YAS
             AddToken(TokenTypes.JumpInstruction, "jne");
             AddToken(TokenTypes.JumpInstruction, "jge");
             AddToken(TokenTypes.JumpInstruction, "jg");
-            AddToken(TokenTypes.Instruction, "irmovq");
-            AddToken(TokenTypes.Instruction, "rrmovq");
-            AddToken(TokenTypes.Instruction, "mrmovq");
-            AddToken(TokenTypes.Instruction, "rmmovq");
+            AddToken(TokenTypes.MoveInstruction, "irmovq");
+            AddToken(TokenTypes.MoveInstruction, "rrmovq");
+            AddToken(TokenTypes.MoveInstruction, "mrmovq");
+            AddToken(TokenTypes.MoveInstruction, "rmmovq");
             AddToken(TokenTypes.Register, "%rax");
             AddToken(TokenTypes.Register, "%rbx");
             AddToken(TokenTypes.Register, "%rcx");
@@ -153,12 +154,16 @@ namespace YAS
 
             for(int i = 0; i < line.Length; i++)
             {
-                line[i].TrimEnd(',');
+                line[i] = line[i].TrimEnd(',');
             }
 
             Token[] ParsedTokens = new Token[line.Length];
 
             SimpleKeywordParse(line, out ParsedTokens);
+
+            Token[] ContextTokens = new Token[ParsedTokens.Length];
+            ContextParse(ParsedTokens);
+            Console.WriteLine("Successfully parsed " + str);
             return null;
         }
 
@@ -176,8 +181,18 @@ namespace YAS
                 else
                 {
                     //The first instruction can also be a label
+                    if (units[i].EndsWith(':'))
+                    {
+                        //label
+                        tokens[i] = new Token((int)TokenTypes.Label, units[i]);
+                    }
                     //Find if it is an 'Unknown', we can't always tell if immediate or an 'unknown' variable or label
                     //$ indicates immediate, 0x after that indicates HEX
+                    if (units[i].StartsWith('$'))
+                    {
+                        //immediate
+                        tokens[i] = new Token((int)TokenTypes.Immediate, units[i]);
+                    }
 
                     //throw parse exception here!
                     return false;
@@ -186,19 +201,73 @@ namespace YAS
             return true;
         }
 
-        private bool ContextParse(Token[] tokens_in, out Token[] tokens_out)
+        private bool ContextParse(Token[] tokens_in)
         {
             Token firstToken = tokens_in[0];
-            tokens_out = null;
             switch (firstToken.Type)
             {
                 case ((int)TokenTypes.OpInstruction):
+                    //Tokens must be of length 3 and have 2 register arguments
+                    if(tokens_in.Length == 3)
+                    {
+                        if(tokens_in[1].Type == (int)TokenTypes.Register && tokens_in[2].Type == (int)TokenTypes.Register)
+                        {
+                            return true;
+                        }
+                    }
+                    //Throw Exception Here!
+                    break;
+                case ((int)TokenTypes.MoveInstruction):
+                    if(firstToken.Text.ToLower() == "irmovq")
+                    {
+                        if (tokens_in[1].Type == (int)TokenTypes.Immediate && tokens_in[2].Type == (int)TokenTypes.Register)
+                        {
+                            return true;
+                        }
+                    }
+                    if (firstToken.Text.ToLower() == "rrmovq")
+                    {
+                        if (tokens_in[1].Type == (int)TokenTypes.Register && tokens_in[2].Type == (int)TokenTypes.Register)
+                        {
+                            return true;
+                        }
+                    }
+                    if (firstToken.Text.ToLower() == "rmmovq")
+                    {
+                        if (tokens_in[1].Type == (int)TokenTypes.Register && tokens_in[2].Type == (int)TokenTypes.Immediate)
+                        {
+                            return true;
+                        }
+                    }
+                    if (firstToken.Text.ToLower() == "mrmovq")
+                    {
+                        if (tokens_in[1].Type == (int)TokenTypes.Immediate && tokens_in[2].Type == (int)TokenTypes.Register)
+                        {
+                            return true;
+                        }
+                    }
+                    break;
+                case ((int)TokenTypes.JumpInstruction):
+
+                    break;
+                case ((int)TokenTypes.Label):
+                    //Must be length 1
+                    if(tokens_in.Length == 1)
+                    {
+                        return true;
+                    }
                     break;
 
                 default:
                     //Throw Exception here!
                     break;
             }
+            string exstring = "";
+            for(int i = 0; i < tokens_in.Length; i++)
+            {
+                exstring += tokens_in[i].Text + " ";
+            }
+            throw new Exception("Could not context parse line " + exstring);
             return false;
         }
     }
