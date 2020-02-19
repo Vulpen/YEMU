@@ -4,53 +4,67 @@ using System.Text;
 
 namespace YAS
 {
-    enum TokenTypes
+    enum EnumTokenTypes
     {
         Instruction = 0,
-        OpInstruction,
-        JumpInstruction,
-        MoveInstruction,
         Register,
         Immediate,
         Label,
-        Uknown,
+        Unkown,
     }
 
-    /// <summary>
-    /// Tokens represent atomic units of text in assembly.
-    /// </summary>
-    class Token
+    enum EnumTokenProperties{
+        TokenType = 0,   //Corresponds to EnumTokenTypes
+        LabelId,  //Used for label table
+        OpSizeBytes,  //stores 1, 2, 4, 8 if size is added
+        ImmediateValue, //If is immediate, stores the value
+        RealInstruction, //Corresponds to EnumInstructions
+        RegisterNumber   //Corresponds to EnumRegisters
+    }
+
+    enum EnumInstructions
     {
-        private int _type;
-        private string _text;
+        //Todo: add cmov's
+        add = 0,
+        sub,
+        xor,
+        imul,
+        jmp,
+        jle,
+        jl,
+        je,
+        jne,
+        jge,
+        jg,
+        irmov,
+        rrmov,
+        mrmov,
+        rmmov,
+        halt,
+        nop,
+        call,
+        ret,
+        push,
+        pop
+    }
 
-        public int Type
-        {
-            get { return _type; }
-        }
-
-        public string Text
-        {
-            get { return _text; }
-        }
-
-        public Token(int type, string str)
-        {
-            _type = type;
-            _text = str;
-
-        }
-        public Token(TokenTypes type, string str)
-        {
-            _type = (int)type;
-            _text = str;
-        }
-
-        public Token(Token other)
-        {
-            _type = other._type;
-            _text = other._text;
-        }
+    enum EnumRegisters
+    {
+        rax = 0,
+        rcx,
+        rdx,
+        rbx,
+        rsp,
+        rbp,
+        rsi,
+        rdi,
+        r8,
+        r9,
+        r10,
+        r11,
+        r12,
+        r13,
+        r14
     }
 
     /// <summary>
@@ -60,55 +74,80 @@ namespace YAS
     {
         private List<Token> keys;
 
-        private void AddToken(TokenTypes type, string str)
-        {
-            keys.Add(new Token(type, str));
-        }
-
         public Keywords()
         {
             keys = new List<Token>();
-            AddToken(TokenTypes.OpInstruction, "addq");
-            AddToken(TokenTypes.OpInstruction, "subq");
-            AddToken(TokenTypes.OpInstruction, "andq");
-            AddToken(TokenTypes.OpInstruction, "xorq");
-            AddToken(TokenTypes.OpInstruction, "imulq");
-            AddToken(TokenTypes.JumpInstruction, "jmp");
-            AddToken(TokenTypes.JumpInstruction, "jle");
-            AddToken(TokenTypes.JumpInstruction, "jl");
-            AddToken(TokenTypes.JumpInstruction, "je");
-            AddToken(TokenTypes.JumpInstruction, "jne");
-            AddToken(TokenTypes.JumpInstruction, "jge");
-            AddToken(TokenTypes.JumpInstruction, "jg");
-            AddToken(TokenTypes.MoveInstruction, "irmovq");
-            AddToken(TokenTypes.MoveInstruction, "rrmovq");
-            AddToken(TokenTypes.MoveInstruction, "mrmovq");
-            AddToken(TokenTypes.MoveInstruction, "rmmovq");
-            AddToken(TokenTypes.Register, "%rax");
-            AddToken(TokenTypes.Register, "%rbx");
-            AddToken(TokenTypes.Register, "%rcx");
-            AddToken(TokenTypes.Register, "%rdx");
-            AddToken(TokenTypes.Register, "%rsp");
-            AddToken(TokenTypes.Register, "%rbp");
-            AddToken(TokenTypes.Register, "%rsi");
-            AddToken(TokenTypes.Register, "%rdi");
-            AddToken(TokenTypes.Register, "%r8");
-            AddToken(TokenTypes.Register, "%r9");
-            AddToken(TokenTypes.Register, "%r10");
-            AddToken(TokenTypes.Register, "%r11");
-            AddToken(TokenTypes.Register, "%r12");
-            AddToken(TokenTypes.Register, "%r13");
-            AddToken(TokenTypes.Register, "%r14");
+            GenerateTokens(ref keys);
+            //AddToken(EnumTokenTypes.Instruction, "addq");
+            //AddToken(EnumTokenTypes.Instruction, "subq");
+            //AddToken(EnumTokenTypes.Instruction, "andq");
+            //AddToken(EnumTokenTypes.Instruction, "xorq");
+            //AddToken(EnumTokenTypes.Instruction, "imulq");
+            //AddToken(EnumTokenTypes.Instruction, "jmp");
+            //AddToken(EnumTokenTypes.Instruction, "jle");
+            //AddToken(EnumTokenTypes.Instruction, "jl");
+            //AddToken(EnumTokenTypes.Instruction, "je");
+            //AddToken(EnumTokenTypes.Instruction, "jne");
+            //AddToken(EnumTokenTypes.Instruction, "jge");
+            //AddToken(EnumTokenTypes.Instruction, "jg");
+            //AddToken(EnumTokenTypes.Instruction, "irmovq");
+            //AddToken(EnumTokenTypes.Instruction, "rrmovq");
+            //AddToken(EnumTokenTypes.Instruction, "mrmovq");
+            //AddToken(EnumTokenTypes.Instruction, "rmmovq");
+            //AddToken(EnumTokenTypes.Register, "%rax");
+            //AddToken(EnumTokenTypes.Register, "%rbx");
+            //AddToken(EnumTokenTypes.Register, "%rcx");
+            //AddToken(EnumTokenTypes.Register, "%rdx");
+            //AddToken(EnumTokenTypes.Register, "%rsp");
+            //AddToken(EnumTokenTypes.Register, "%rbp");
+            //AddToken(EnumTokenTypes.Register, "%rsi");
+            //AddToken(EnumTokenTypes.Register, "%rdi");
+            //AddToken(EnumTokenTypes.Register, "%r8");
+            //AddToken(EnumTokenTypes.Register, "%r9");
+            //AddToken(EnumTokenTypes.Register, "%r10");
+            //AddToken(EnumTokenTypes.Register, "%r11");
+            //AddToken(EnumTokenTypes.Register, "%r12");
+            //AddToken(EnumTokenTypes.Register, "%r13");
+            //AddToken(EnumTokenTypes.Register, "%r14");
         }
 
-        public bool IsKeyword(string val, out Token tkn)
+        public void AddInstructionToken(List<Token> tokens, string str, EnumInstructions instructionEnum)
         {
-            tkn = null;
-            for(int i = 0; i < keys.Count; i++)
+            Token tkn = new Token(str);
+            tkn.AddProperty(EnumTokenProperties.TokenType, (Int64)EnumTokenTypes.Instruction);
+            tkn.AddProperty(EnumTokenProperties.RealInstruction, (Int64)instructionEnum);
+        }
+
+        private void AddRegisterToken(List<Token> tokens, string str, EnumRegisters registerEnum)
+        {
+            Token tkn = new Token(str);
+            tkn.AddProperty(EnumTokenProperties.TokenType, (Int64)EnumTokenTypes.Instruction);
+            tkn.AddProperty(EnumTokenProperties.RegisterNumber, (Int64)registerEnum);
+            tokens.Add(tkn);
+        }
+
+        public void GenerateTokens(ref List<Token> tknList)
+        {
+            //Token tkn = new Token()
+            //-----Instructions
+            tknList.Add(new Token((Int64)EnumTokenTypes.Instruction, (Int64)EnumInstructions.add, "addq"));
+            tknList.Add(new Token((Int64)EnumTokenTypes.Instruction, (Int64)EnumInstructions.sub, "subq"));
+            tknList.Add(new Token((Int64)EnumTokenTypes.Instruction, (Int64)EnumInstructions.xor, "xorq"));
+
+            //-----Registers
+            AddRegisterToken(tknList, "%rax", EnumRegisters.rax);
+            AddRegisterToken(tknList, "%rbx", EnumRegisters.rbx);
+            AddRegisterToken(tknList, "%rcx", EnumRegisters.rcx);
+            AddRegisterToken(tknList, "%rdx", EnumRegisters.rdx);
+        }
+
+        public bool IsKeyword(string val, ref Token tkn)
+        {
+            for (int i = 0; i < keys.Count; i++)
             {
-                if(keys[i].Text == val)
+                if (keys[i].Text == val)
                 {
-                    tkn = new Token(keys[i].Type, val); 
+                    tkn = keys[i].DeepCopy();
                     return true;
                 }
             }
@@ -129,7 +168,130 @@ namespace YAS
     }
 
     /// <summary>
-    /// Handles parsing an input string into a series of tokens.
+    /// Tokens represent atomic units of text in assembly and contains properties associated with the token.
+    /// </summary>
+    class Token
+    {
+        private string _text;
+        private Dictionary<EnumTokenProperties, Int64> Properties;
+
+        public Token()
+        {
+            Properties = new Dictionary<EnumTokenProperties, long>();
+        }
+
+        public Token(string str)
+        {
+            Properties = new Dictionary<EnumTokenProperties, long>();
+            _text = str;
+        }
+
+        /// <summary>
+        /// Creates a token and automatically adds TokenType.
+        /// </summary>
+        public Token(Int64 TokenTypeVal, string str)
+        {
+            _text = str;
+            Properties = new Dictionary<EnumTokenProperties, long>();
+            AddProperty(EnumTokenProperties.TokenType, TokenTypeVal);
+        }
+
+        /// <summary>
+        /// Creates a token and automatically adds TokenType and RealInstruction Properties.
+        /// </summary>
+        public Token(Int64 TokenTypeVal, Int64 RealInstructionVal, string str)
+        {
+            Properties = new Dictionary<EnumTokenProperties, long>();
+            _text = str;
+            AddProperty(EnumTokenProperties.TokenType, TokenTypeVal);
+            AddProperty(EnumTokenProperties.RealInstruction, RealInstructionVal);
+        }
+
+        public Token(Int64 TokenTypeVal, Int64 RealInstructionVal, int InstructionSize, string str)
+        {
+            Properties = new Dictionary<EnumTokenProperties, long>();
+            _text = str;
+            AddProperty(EnumTokenProperties.TokenType, TokenTypeVal);
+            AddProperty(EnumTokenProperties.RealInstruction, RealInstructionVal);
+            AddProperty(EnumTokenProperties.OpSizeBytes, (Int64)InstructionSize);
+        }
+
+        public string Text
+        {
+            get { return _text; }
+        }
+
+        public bool AddProperty(EnumTokenProperties key, Int64 val)
+        {
+            if (!Properties.ContainsKey(key))
+            {
+                //Perhaps add some key/value checking here
+                Properties.Add(key, val);
+                return true;
+            }
+            //Invalid Property Exception
+            return false;
+        }
+
+        public bool GetProperty(EnumTokenProperties key, out Int64 val)
+        {
+            val = -1;
+            if (Properties.ContainsKey(key))
+            {
+                val = Properties[key];
+                return true;
+            }
+            return false;
+        }
+
+        public bool GetProperty(EnumTokenProperties key, out int val)
+        {
+            val = -1;
+            if (Properties.ContainsKey(key))
+            {
+                val = (int)Properties[key];
+                return true;
+            }
+            return false;
+        }
+
+        public bool GetInstruction(out EnumInstructions val)
+        {
+            val = EnumInstructions.add;
+            if (Properties.ContainsKey(EnumTokenProperties.RealInstruction))
+            {
+                val = (EnumInstructions)Properties[EnumTokenProperties.RealInstruction];
+                return true;
+            }
+            return false;
+        }
+
+        public bool GetTokenType(out EnumTokenTypes val)
+        {
+            val = EnumTokenTypes.Unkown;
+            if (Properties.ContainsKey(EnumTokenProperties.TokenType))
+            {
+                val = (EnumTokenTypes)Properties[EnumTokenProperties.TokenType];
+                return true;
+            }
+            return false;
+        }
+
+        public Token DeepCopy()
+        {
+            //Ensure a new instance of _text is created
+            char[] s = _text.ToCharArray();
+            Token temp = new Token(s.ToString());
+            foreach (var prop in Properties)
+            {
+                temp.AddProperty(prop.Key, prop.Value);
+            }
+            return temp;
+        }
+    }
+
+    /// <summary>
+    /// Handles parsing and 'lexing' an input string into a series of tokens.
     /// </summary>
     class Parser
     {
@@ -159,23 +321,24 @@ namespace YAS
 
             Token[] ParsedTokens = new Token[line.Length];
 
-            SimpleKeywordParse(line, out ParsedTokens);
+            SimpleKeywordParse(line, ref ParsedTokens);
 
-            Token[] ContextTokens = new Token[ParsedTokens.Length];
             ContextParse(ParsedTokens);
             Console.WriteLine("Successfully parsed " + str);
             return null;
         }
 
-        private bool SimpleKeywordParse(string[] units, out Token[] tokens)
+        /// <summary>
+        /// This is a naive parse that loops through every unit in the string and determines if each one is a label, immediate, instruction etc.
+        /// </summary>
+        /// <returns></returns>
+        private bool SimpleKeywordParse(string[] units, ref Token[] tokens)
         {
-
             tokens = new Token[units.Length];
-
             for(int i = 0; i < units.Length; i++)
             {
-                Token temp;
-                if (YKeywords.IsKeyword(units[i], out temp)){
+                Token temp = null;
+                if (YKeywords.IsKeyword(units[i], ref temp)){
                     tokens[i] = temp;
                 }
                 else
@@ -184,16 +347,15 @@ namespace YAS
                     if (units[i].EndsWith(':'))
                     {
                         //label
-                        tokens[i] = new Token((int)TokenTypes.Label, units[i]);
+                        tokens[i] = new Token((int)EnumTokenTypes.Label, units[i]);
                     }
                     //Find if it is an 'Unknown', we can't always tell if immediate or an 'unknown' variable or label
                     //$ indicates immediate, 0x after that indicates HEX
                     if (units[i].StartsWith('$'))
                     {
                         //immediate
-                        tokens[i] = new Token((int)TokenTypes.Immediate, units[i]);
+                        tokens[i] = new Token((int)EnumTokenTypes.Immediate, units[i]);
                     }
-
                     //throw parse exception here!
                     return false;
                 }
@@ -201,73 +363,91 @@ namespace YAS
             return true;
         }
 
-        private bool ContextParse(Token[] tokens_in)
+        private bool CheckArithmeticOperation(Token[] tkns)
         {
-            Token firstToken = tokens_in[0];
-            switch (firstToken.Type)
+            if(tkns.Length == 3)
             {
-                case ((int)TokenTypes.OpInstruction):
-                    //Tokens must be of length 3 and have 2 register arguments
-                    if(tokens_in.Length == 3)
-                    {
-                        if(tokens_in[1].Type == (int)TokenTypes.Register && tokens_in[2].Type == (int)TokenTypes.Register)
-                        {
-                            return true;
-                        }
-                    }
-                    //Throw Exception Here!
-                    break;
-                case ((int)TokenTypes.MoveInstruction):
-                    if(firstToken.Text.ToLower() == "irmovq")
-                    {
-                        if (tokens_in[1].Type == (int)TokenTypes.Immediate && tokens_in[2].Type == (int)TokenTypes.Register)
-                        {
-                            return true;
-                        }
-                    }
-                    if (firstToken.Text.ToLower() == "rrmovq")
-                    {
-                        if (tokens_in[1].Type == (int)TokenTypes.Register && tokens_in[2].Type == (int)TokenTypes.Register)
-                        {
-                            return true;
-                        }
-                    }
-                    if (firstToken.Text.ToLower() == "rmmovq")
-                    {
-                        if (tokens_in[1].Type == (int)TokenTypes.Register && tokens_in[2].Type == (int)TokenTypes.Immediate)
-                        {
-                            return true;
-                        }
-                    }
-                    if (firstToken.Text.ToLower() == "mrmovq")
-                    {
-                        if (tokens_in[1].Type == (int)TokenTypes.Immediate && tokens_in[2].Type == (int)TokenTypes.Register)
-                        {
-                            return true;
-                        }
-                    }
-                    break;
-                case ((int)TokenTypes.JumpInstruction):
-
-                    break;
-                case ((int)TokenTypes.Label):
-                    //Must be length 1
-                    if(tokens_in.Length == 1)
+                EnumTokenTypes token1Type;
+                EnumTokenTypes token2Type;
+                if(tkns[1].GetTokenType(out token1Type) && tkns[2].GetTokenType(out token2Type))
+                {
+                    if(token1Type == EnumTokenTypes.Register && token2Type == EnumTokenTypes.Register)
                     {
                         return true;
                     }
-                    break;
+                }
+            }
+            return false;
+        }
 
-                default:
-                    //Throw Exception here!
+        private bool CheckJMP(Token[] tkns)
+        {
+            throw new NotImplementedException();
+        }
+
+        private bool CheckInstruction(Token[] tokens)
+        {
+            Token firstToken = tokens[0];
+            EnumInstructions CurrentTokenInstruction;
+            if(!firstToken.GetInstruction(out CurrentTokenInstruction))
+            {
+                return false;
+            }
+            switch (CurrentTokenInstruction)
+            {
+                case EnumInstructions.jle:
+                case EnumInstructions.jge:
+                case EnumInstructions.jl:
+                case EnumInstructions.jg:
+                case EnumInstructions.je:
+                case EnumInstructions.jne:
+                case EnumInstructions.jmp:
+                case EnumInstructions.call:
+                    break;
+                case EnumInstructions.add:
+                case EnumInstructions.sub:
+                case EnumInstructions.imul:
+                case EnumInstructions.xor:
+                    return CheckArithmeticOperation(tokens);
+                    break;
+                case EnumInstructions.irmov:
+                    break;
+                case EnumInstructions.mrmov:
+                    break;
+                case EnumInstructions.rmmov:
+                    break;
+                case EnumInstructions.rrmov:
+                    break;
+                case EnumInstructions.ret:
+                case EnumInstructions.halt:
                     break;
             }
-            string exstring = "";
-            for(int i = 0; i < tokens_in.Length; i++)
+            return false;
+        }
+
+        private bool ContextParse(Token[] tokens_in)
+        {
+            Token firstToken = tokens_in[0];
+            EnumTokenTypes CurrentTokenType;
+            if(!firstToken.GetTokenType(out CurrentTokenType))
             {
-                exstring += tokens_in[i].Text + " ";
+                return false;
             }
-            throw new Exception("Could not context parse line " + exstring);
+            switch (CurrentTokenType)
+            {
+                case (EnumTokenTypes.Instruction):
+                    return CheckInstruction(tokens_in);
+                    break;
+                case (EnumTokenTypes.Immediate):
+                    break;
+                case (EnumTokenTypes.Label):
+                    break;
+                default:
+                case (EnumTokenTypes.Register):
+                case (EnumTokenTypes.Unkown):
+                    return false;
+                    break;
+            }
             return false;
         }
     }
