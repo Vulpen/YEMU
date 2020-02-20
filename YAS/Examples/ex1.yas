@@ -1,3 +1,34 @@
-﻿addq %rax, %rbx
-subq $60, $59
-xorq $0x5f,
+﻿#Assignment #3
+#Thomas Lowe
+prob1a: #Thomas Lowe
+ irmovq $0x600110, %r9 #a
+ irmovq $0x500064, %r10 #x
+ irmovq $0x500990, %r11 #y
+ addq $80, %r9
+ addq $80, %r10
+ addq $80, %r11
+ mrmovq (%r10), %rcx
+ mrmovq (%r11), %rax
+ addq %rax, %rcx
+ rmmovq %rcx, (%r9)
+prob1b:
+ irmovq $0, %r8
+ rrmovq %r8, %r9
+ subq $10, %r9
+ #else code
+ jge done
+ loop:
+ mrmovq (%rdx), %r10
+ addq $10, %r10
+ rmmovq %r10, (%rdx)
+ addq $1, %r8
+ addq $8, %rdx
+ rrmovq %r8, %r9
+ subq $10, %r9
+ jl loop
+ done:
+prob2:
+ mrmovq $40(%rax), %rbx
+ irmovq $-65, %rcx
+ addq %rcx, %rbx
+ rmmovq %rbx, $40(%rax)
