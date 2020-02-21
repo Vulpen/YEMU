@@ -122,7 +122,7 @@ namespace YAS
         {
             //Ensure a new instance of _text is created
             char[] s = _text.ToCharArray();
-            Token temp = new Token(s.ToString());
+            Token temp = new Token(new string(s));
             foreach (var prop in Properties)
             {
                 temp.AddProperty(prop.Key, prop.Value);

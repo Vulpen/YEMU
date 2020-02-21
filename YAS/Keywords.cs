@@ -28,7 +28,7 @@ namespace YAS
         private void AddRegisterToken(List<Token> tokens, string str, EnumRegisters registerEnum)
         {
             Token tkn = new Token(str);
-            tkn.AddProperty(EnumTokenProperties.TokenType, (Int64)EnumTokenTypes.Instruction);
+            tkn.AddProperty(EnumTokenProperties.TokenType, (Int64)EnumTokenTypes.Register);
             tkn.AddProperty(EnumTokenProperties.RegisterNumber, (Int64)registerEnum);
             tokens.Add(tkn);
         }

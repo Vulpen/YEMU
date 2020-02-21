@@ -89,6 +89,7 @@ namespace YAS
         /// <returns></returns>
         public List<Token> ParseString(string str)
         {
+            str = str.Trim();
             string[] line = str.Split(' ');
             if(line.Length < 1)
             {
@@ -106,7 +107,8 @@ namespace YAS
                 {
                     if(i == 0)
                     {
-                        return null;
+                        Console.WriteLine("Successfully parsed " + str);
+                        return new List<Token>();
                     }
                     else
                     {
@@ -125,9 +127,17 @@ namespace YAS
             Token[] ParsedTokens = new Token[line.Length];
 
             //Lexer
-            SimpleKeywordParse(line, ref ParsedTokens);
+            if(!SimpleKeywordParse(line, ref ParsedTokens))
+            {
+                Console.WriteLine("Failed line on lexing |" + str);
+                return null;
+            }
             //Parser
-            ContextParse(ParsedTokens);
+            if (!ContextParse(ParsedTokens))
+            {
+                Console.WriteLine("Failed on parsing |" + str);
+                return null;
+            }
             //Second Pass
             Console.WriteLine("Successfully parsed " + str);
             return null;
@@ -153,19 +163,22 @@ namespace YAS
                     {
                         //label
                         tokens[i] = new Token((int)EnumTokenTypes.Label, units[i]);
-                        return true;
+                        continue;
                     }
-                    //Find if it is an 'Unknown', we can't always tell if immediate or an 'unknown' variable or label
-                    //$ indicates immediate, 0x after that indicates HEX
+
                     if (units[i].StartsWith('$'))
                     {
-                        //immediate
+                        //Can be an immediate, or a memory address stored in a register WITH an offset, which would be an address register.
+                        if (units[i].Contains("("))
+                        {
+
+                        }
                         tokens[i] = new Token((int)EnumTokenTypes.Immediate, units[i]);
-                        return true;
+                        continue;
                     }
 
                     tokens[i] = new Token((int)EnumTokenTypes.Unkown, units[i]);
-                    return true;
+                    continue;
                 }
             }
             return true;
@@ -195,7 +208,7 @@ namespace YAS
                 EnumTokenTypes token1Type;
                 if (tkns[1].GetTokenType(out token1Type))
                 {
-                    if (token1Type == EnumTokenTypes.Immediate || token1Type == EnumTokenTypes.Label)
+                    if (token1Type == EnumTokenTypes.Immediate || token1Type == EnumTokenTypes.Label || token1Type == EnumTokenTypes.Unkown)
                     {
                         return true;
                     }
@@ -248,7 +261,7 @@ namespace YAS
                     return CheckArithmeticOperation(tokens);
                     break;
                 case EnumInstructions.irmov:
-                    return CheckMov(tokens, EnumTokenTypes.Immediate, EnumTokenTypes.AddressRegister);
+                    return CheckMov(tokens, EnumTokenTypes.Immediate, EnumTokenTypes.Register);
                     break;
                 case EnumInstructions.mrmov:
                     return CheckMov(tokens, EnumTokenTypes.AddressRegister, EnumTokenTypes.Register);
@@ -279,12 +292,12 @@ namespace YAS
                 case (EnumTokenTypes.Instruction):
                     return CheckInstruction(tokens_in);
                     break;
-                case (EnumTokenTypes.Immediate):
-                    break;
                 case (EnumTokenTypes.Label):
                     //Handle label table
+                    return true;
                     break;
                 default:
+                case (EnumTokenTypes.Immediate):
                 case (EnumTokenTypes.Register):
                 case (EnumTokenTypes.Unkown):
                     throw new FoundUnexpectedToken(firstToken);
