@@ -5,14 +5,15 @@ namespace YAS
 {
     class Program
     {
-        static string PATH = "D:\\[KEEP]ProgrammingProjects\\C#\\Y86Emulator\\YAS\\Examples\\ex1.yas";
+        static string PATH = @"E:\[]ProgrammingProjects\C#\YEMU\YAS\Examples\ex1.yas";
         static void Main(string[] args)
         {
             Parser YParser = new Parser();
 
             if (!File.Exists(PATH))
             {
-                Console.WriteLine("Could not find file at line: " + PATH);
+                Console.WriteLine("Could not find file at  " + PATH);
+                return;
             }
 
             int LineNumber = 0;
@@ -37,6 +38,10 @@ namespace YAS
                     }catch (FoundUnexpectedToken e)
                     {
                         Console.WriteLine("ERROR : Unexpected Token " + e.token1.Text + " On Line : " + LineNumber + "|" + CurrentLine);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
                     }
                 }
             }

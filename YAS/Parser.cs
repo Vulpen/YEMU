@@ -171,7 +171,18 @@ namespace YAS
                         //Can be an immediate, or a memory address stored in a register WITH an offset, which would be an address register.
                         if (units[i].Contains("("))
                         {
-
+                            int j = 0;
+                            while(j < units[i].Length)
+                            {
+                                if(units[i][j] == '(')
+                                {
+                                    //0 to j-1 is the immediate
+                                    //Convert and add the property as an offset to the AddressRegister
+                                    Int64 ImmediateVal;
+                                    ImmediateVal = MathConversion.ParseImmediate(units[i].Substring(0, j));
+                                }
+                            }
+                            units[i] = units[i].Substring(j);
                         }
                         tokens[i] = new Token((int)EnumTokenTypes.Immediate, units[i]);
                         continue;
@@ -279,6 +290,10 @@ namespace YAS
             return false;
         }
 
+        /// <summary>
+        /// This function is what truely parses the tokens. This looks at the first instruction, and checks if arguments are correct.
+        /// </summary>
+        /// <returns></returns>
         private bool ContextParse(Token[] tokens_in)
         {
             Token firstToken = tokens_in[0];
@@ -305,6 +320,60 @@ namespace YAS
                     break;
             }
             return false;
+        }
+    }
+
+    class MathConversion
+    {
+        public static bool ConvertHexToInt(string HexString, out Int64 returnNumber)
+        {
+            throw new NotImplementedException("Hex Conversion Not Supported Yet.");
+        }
+
+        public static bool ConvertHexToInt(string HexString, out int returnNumber)
+        {
+            throw new NotImplementedException("Hex Conversion Not Supported Yet.");
+        }
+
+        public static bool ConvertIntToHex(Int64 Number, out string HexString)
+        {
+            throw new NotImplementedException("Hex Conversion Not Supported Yet.");
+        }
+
+        public static bool ConvertIntToHex(int Number, out string HexString)
+        {
+            throw new NotImplementedException("Hex Conversion Not Supported Yet.");
+        }
+
+        public static Int64 ParseImmediate(string Text)
+        {
+            string Temp = new string(Text);
+            if (Text.StartsWith('$'))
+            {
+                //Check if it is an immediate, might be redundant.
+                Temp = Temp.Substring(1);
+                if (Temp.StartsWith("0x") || Temp.StartsWith("0X"))
+                {
+                    //Treat as Hex
+                    Temp = Temp.Substring(2);
+                    Int64 number;
+                    //MathConversion.ConvertHexToInt(Temp, out number);
+                    if(Int64.TryParse(Temp, System.Globalization.NumberStyles.HexNumber, null, out number))
+                    {
+                        return number;
+                    }
+                }
+                else
+                {
+                    //Treat as Decimal
+                    Int64 number;
+                    if (Int64.TryParse(Temp, out number))
+                    {
+                        return number;
+                    }
+                }
+            }
+            return -1;
         }
     }
 }
