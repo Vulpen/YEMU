@@ -42,6 +42,10 @@ namespace YAS
                         //Console.WriteLine("ERROR : Unexpected Token " + e.token1.Text + " On Line : " + LineNumber + "|" + CurrentLine);
                         Console.WriteLine($"ERROR : Unexpected Token {e.token1.Text} On Line : {LineNumber} | {CurrentLine}");
                     }
+                    catch (AssemblerException e)
+                    {
+                        Console.WriteLine("ASSEMBLER ERROR AT STAGE " + Enum.GetName(typeof(EnumAssemblerStages), e._Stage) + " " + e.Message);
+                    }
                     catch (Exception e)
                     {
                         Console.WriteLine(e.Message);

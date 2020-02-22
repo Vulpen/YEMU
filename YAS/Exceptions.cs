@@ -24,4 +24,31 @@ namespace YAS
 
         }
     }
+
+    public enum EnumAssemblerStages
+    {
+        Lexer = 0,
+        Utility,
+        Parser,
+        TokenFile,
+        BinaryWriter
+    }
+
+    public class AssemblerException : Exception
+    {
+        public EnumAssemblerStages _Stage;
+        public AssemblerException()
+        {
+        }
+
+        public AssemblerException(EnumAssemblerStages stage)
+        {
+            _stage = stage;
+        }
+
+        public AssemblerException(EnumAssemblerStages stage, string message) : base(message)
+        {
+            _stage = stage;
+        }
+    }
 }

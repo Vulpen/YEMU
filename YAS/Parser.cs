@@ -138,8 +138,12 @@ namespace YAS
                 Console.WriteLine("Failed on parsing |" + str);
                 return null;
             }
-            //Second Pass
             Console.WriteLine("Successfully parsed " + str);
+            //If tokens_output
+            for(int i = 0; i < ParsedTokens.Length; i++)
+            {
+                Console.Write(ParsedTokens[i].TokenInfoString());
+            }
             return null;
         }
 
@@ -356,8 +360,14 @@ namespace YAS
             throw new NotImplementedException("Hex Conversion Not Supported Yet.");
         }
 
+        /// <summary>
+        /// Parse an immediate in Y86 language to an Int64
+        /// </summary>
+        /// <param name="Text"></param>
+        /// <returns></returns>
         public static Int64 ParseImmediate(string Text)
         {
+            //Todo: change to return a bool for success state.
             string Temp = new string(Text);
             if (Text.StartsWith('$'))
             {
@@ -384,7 +394,16 @@ namespace YAS
                     }
                 }
             }
+            throw new AssemblerException(EnumAssemblerStages.Utility, "Could not parse " + Text + " to integer");
             return -1;
+        }
+
+        public static bool Int64ToHexString(Int64 number, int padToLength, out string hexString)
+        {
+            hexString = String.Empty;
+            hexString = number.ToString("X");
+            hexString = hexString.PadLeft(padToLength, '0');
+            return true;
         }
     }
 }

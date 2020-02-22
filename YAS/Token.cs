@@ -129,5 +129,38 @@ namespace YAS
             }
             return temp;
         }
+
+        /// <summary>
+        /// Gives a friendly output string of the token for debugging.
+        /// </summary>
+        /// <returns></returns>
+        public string TokenInfoString()
+        {
+            string returnString = "";
+            foreach(var val in Properties)
+            {
+                switch (val.Key)
+                {
+                    case (EnumTokenProperties.RealInstruction):
+                        returnString += "Instruction:" + Enum.GetName(typeof(EnumInstructions), val.Value) + " ";
+                        break;
+                    case (EnumTokenProperties.RegisterNumber):
+                        returnString += "Register:" + Enum.GetName(typeof(EnumRegisters), val.Value) + " ";
+                        break;
+                    case (EnumTokenProperties.TokenType):
+                        returnString += "Type:" + Enum.GetName(typeof(EnumTokenTypes), val.Value) + " ";
+                        break;
+                    case (EnumTokenProperties.ImmediateValue):
+                        returnString += "Literal:" + val.Value + " ";
+                        break;
+                    case (EnumTokenProperties.LabelId):
+                        break;
+                    case (EnumTokenProperties.OpSizeBytes):
+                        break;
+                }
+            }
+
+            return returnString + Environment.NewLine;
+        }
     }
 }
