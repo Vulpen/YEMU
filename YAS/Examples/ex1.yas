@@ -11,6 +11,7 @@ prob1a: #Thomas Lowe
  mrmovq (%r11), %rax
  addq %rax, %rcx
  rmmovq %rcx, (%r9)
+ $0xFF
 prob1b:
  irmovq $0, %r8
  rrmovq %r8, %r9

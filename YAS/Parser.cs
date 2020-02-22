@@ -169,6 +169,7 @@ namespace YAS
                     if (units[i].StartsWith('$'))
                     {
                         //Can be an immediate, or a memory address stored in a register WITH an offset, which would be an address register.
+                        Int64 ImmediateVal = 0;
                         if (units[i].Contains("("))
                         {
                             int j = 0;
@@ -178,13 +179,23 @@ namespace YAS
                                 {
                                     //0 to j-1 is the immediate
                                     //Convert and add the property as an offset to the AddressRegister
-                                    Int64 ImmediateVal;
                                     ImmediateVal = MathConversion.ParseImmediate(units[i].Substring(0, j));
+                                    break;
                                 }
+                                j++;
                             }
                             units[i] = units[i].Substring(j);
+                            if (YKeywords.IsKeyword(units[i], ref temp))
+                            {
+                                temp.AddProperty(EnumTokenProperties.ImmediateValue, ImmediateVal);
+                                tokens[i] = temp;
+                                continue;
+                            }
                         }
+
+                        ImmediateVal = MathConversion.ParseImmediate(units[i]);
                         tokens[i] = new Token((int)EnumTokenTypes.Immediate, units[i]);
+                        tokens[i].AddProperty(EnumTokenProperties.ImmediateValue, ImmediateVal);
                         continue;
                     }
 
@@ -315,7 +326,7 @@ namespace YAS
                 case (EnumTokenTypes.Immediate):
                 case (EnumTokenTypes.Register):
                 case (EnumTokenTypes.Unkown):
-                    throw new FoundUnexpectedToken(firstToken);
+                    throw new FoundUnexpectedToken(firstToken.DeepCopy());
                     return false;
                     break;
             }

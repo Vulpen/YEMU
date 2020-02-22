@@ -5,7 +5,8 @@ namespace YAS
 {
     class Program
     {
-        static string PATH = @"E:\[]ProgrammingProjects\C#\YEMU\YAS\Examples\ex1.yas";
+        //static string PATH = @"E:\[]ProgrammingProjects\C#\YEMU\YAS\Examples\ex1.yas";
+        static string PATH = @"D:\[KEEP]ProgrammingProjects\C#\Y86Emulator\YAS\Examples\ex1.yas";
         static void Main(string[] args)
         {
             Parser YParser = new Parser();
@@ -17,6 +18,7 @@ namespace YAS
             }
 
             int LineNumber = 0;
+
             using (StreamReader readStream = new StreamReader(PATH))
             {
                 string CurrentLine;
@@ -37,7 +39,8 @@ namespace YAS
                         YParser.ParseString(CurrentLine);
                     }catch (FoundUnexpectedToken e)
                     {
-                        Console.WriteLine("ERROR : Unexpected Token " + e.token1.Text + " On Line : " + LineNumber + "|" + CurrentLine);
+                        //Console.WriteLine("ERROR : Unexpected Token " + e.token1.Text + " On Line : " + LineNumber + "|" + CurrentLine);
+                        Console.WriteLine($"ERROR : Unexpected Token {e.token1.Text} On Line : {LineNumber} | {CurrentLine}");
                     }
                     catch (Exception e)
                     {
