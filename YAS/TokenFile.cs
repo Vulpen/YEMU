@@ -36,19 +36,27 @@ namespace YAS
         }
     }
 
+    class TokenLine
+    {
+        public Token[] Tokens;
+        public Int64 BeginAddress;
+        public Int64 EndAddress;
+    }
+
     /// <summary>
     /// A representation of our file in arrays of tokens.
     /// </summary>
     class TokenFile
     {
         private Dictionary<string, Int64> LabelTable;
-        private List<Token[]> File;
+        //private List<Token[]> File;
+        private List<TokenLine> File;
         private Int64 FileSize;
         private InstructionSize Y86Sizes;
 
         public TokenFile()
         {
-            File = new List<Token[]>();
+            File = new List<TokenLine>();
             LabelTable = new Dictionary<string, long>();
             Y86Sizes = new InstructionSize();
             FileSize = 0;
@@ -71,24 +79,51 @@ namespace YAS
                     }
                 }
                 EnumInstructions inst;
+                Int64 InstructionLength = 0;
                 if(tokens[0].GetInstruction(out inst))
                 {
-                    FileSize += Y86Sizes.GetInstructionSize(inst);
+                    InstructionLength = Y86Sizes.GetInstructionSize(inst);
                 }
-
-                File.Add(tokens);
+                else
+                {
+                    throw new AssemblerException(EnumAssemblerStages.TokenFile, "Could not get instruction length");
+                }
+                TokenLine tempLine = new TokenLine();
+                tempLine.Tokens = tokens;
+                tempLine.BeginAddress = FileSize;
+                tempLine.EndAddress = tempLine.BeginAddress + InstructionLength;
+                File.Add(tempLine);
+                return;
             }
             throw new Exception("Tried to add empty line to token file");
+        }
+
+        public bool ResolveLabels()
+        {
+            //Resolves labels on the Token File.
+            throw new NotImplementedException();
         }
 
         public Token[] GetLine(int index)
         {
             if(index >=0 && index < File.Count)
             {
-                return File[index];
+                return File[index].Tokens;
             }
             throw new Exception("Attempt to access invalid index of token file");
-            return File[index];
+            return File[index].Tokens;
+        }
+
+        public TokenLine GetInstructionLine(Int64 Address)
+        {
+            for(int i = 0; i < File.Count; i++)
+            {
+                if(File[i].BeginAddress == Address)
+                {
+                    return File[i];
+                }
+            }
+            throw new AssemblerException(EnumAssemblerStages.TokenFile, "Could not retreive instruction line at address + " + Address.ToString());
         }
     }
 }

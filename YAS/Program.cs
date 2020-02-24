@@ -44,7 +44,7 @@ namespace YAS
                     }
                     catch (AssemblerException e)
                     {
-                        Console.WriteLine("ASSEMBLER ERROR AT STAGE " + Enum.GetName(typeof(EnumAssemblerStages), e._Stage) + " " + e.Message);
+                        Console.WriteLine("ERROR at stage : " + Enum.GetName(typeof(EnumAssemblerStages), e._Stage) + " " + e.Message);
                     }
                     catch (Exception e)
                     {
