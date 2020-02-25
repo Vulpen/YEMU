@@ -102,7 +102,6 @@ namespace YAS
                 val = (EnumInstructions)Properties[EnumTokenProperties.RealInstruction];
                 return true;
             }
-            throw new NullReferenceException("Could not get instruction on token: " + _text);
             return false;
         }
 

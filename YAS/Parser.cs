@@ -77,17 +77,19 @@ namespace YAS
     class Parser
     {
         private Keywords YKeywords;
+        private EnumVerboseLevels _verbosityLevel;
 
-        public Parser()
+        public Parser(EnumVerboseLevels lvl)
         {
             YKeywords = new Keywords();
+            _verbosityLevel = lvl;
         }
 
         /// <summary>
         /// Driver of all necessary private functions and splits string into a list of strings.
         /// </summary>
         /// <returns></returns>
-        public List<Token> ParseString(string str)
+        public Token[] ParseString(string str)
         {
             str = str.Trim();
             string[] line = str.Split(' ');
@@ -107,13 +109,13 @@ namespace YAS
                 {
                     if(i == 0)
                     {
-                        Console.WriteLine("Successfully parsed " + str);
-                        return new List<Token>();
+                        Console.WriteLine("Ignored: " + str);
+                        return null;
                     }
                     else
                     {
                         string[] replace = new string[i];
-                        for(int j = 0; j < replace.Length; j++)
+                        for(int j = 0; j < i; j++)
                         {
                             replace[j] = line[j];
                         }
@@ -144,7 +146,7 @@ namespace YAS
             {
                 Console.Write(ParsedTokens[i].TokenInfoString());
             }
-            return null;
+            return ParsedTokens;
         }
 
         /// <summary>

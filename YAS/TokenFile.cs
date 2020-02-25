@@ -11,6 +11,7 @@ namespace YAS
 
         public InstructionSize()
         {
+            Sizes = new Dictionary<EnumInstructions, int>();
             Sizes.Add(EnumInstructions.halt, 1);
             Sizes.Add(EnumInstructions.nop, 1);
             Sizes.Add(EnumInstructions.rrmov, 2);
@@ -24,6 +25,12 @@ namespace YAS
             Sizes.Add(EnumInstructions.sub, 2);
             Sizes.Add(EnumInstructions.imul, 2);
             Sizes.Add(EnumInstructions.xor, 2);
+            Sizes.Add(EnumInstructions.jmp, 9);
+            Sizes.Add(EnumInstructions.je, 9);
+            Sizes.Add(EnumInstructions.jle, 9);
+            Sizes.Add(EnumInstructions.jge, 9);
+            Sizes.Add(EnumInstructions.jg, 9);
+            Sizes.Add(EnumInstructions.jl, 9);
         }
 
         public int GetInstructionSize(EnumInstructions inst)
@@ -41,6 +48,46 @@ namespace YAS
         public Token[] Tokens;
         public Int64 BeginAddress;
         public Int64 EndAddress;
+
+        public bool ContainsLabel()
+        {
+            if(Tokens != null)
+            {
+                for(int i = 0; i < Tokens.Length; i++)
+                {
+                    EnumTokenTypes temp;
+                    Tokens[i].GetTokenType(out temp);
+                    if (temp == EnumTokenTypes.Label)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Returns index in the line of a label.
+        /// </summary>
+        /// <returns></returns>
+        public int ReturnLabelIndex()
+        {
+            if (Tokens != null)
+            {
+                for (int i = 0; i < Tokens.Length; i++)
+                {
+                    EnumTokenTypes temp;
+                    Tokens[i].GetTokenType(out temp);
+                    if (temp == EnumTokenTypes.Label)
+                    {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+            return -1;
+        }
     }
 
     /// <summary>
@@ -75,25 +122,31 @@ namespace YAS
                 {
                     if(type == EnumTokenTypes.Label)
                     {
-                        LabelTable.Add(tokens[0].Text, FileSize);
+                        if(!LabelTable.ContainsKey(tokens[0].Text))
+                            LabelTable.Add(tokens[0].Text, FileSize);
+                        return;
+                    }
+
+                    if(type == EnumTokenTypes.Instruction)
+                    {
+                        EnumInstructions inst;
+                        Int64 InstructionLength = 0;
+                        if (tokens[0].GetInstruction(out inst))
+                        {
+                            InstructionLength = Y86Sizes.GetInstructionSize(inst);
+                        }
+                        else
+                        {
+                            throw new AssemblerException(EnumAssemblerStages.TokenFile, "Could not get instruction length");
+                        }
+                        TokenLine tempLine = new TokenLine();
+                        tempLine.Tokens = tokens;
+                        tempLine.BeginAddress = FileSize;
+                        tempLine.EndAddress = tempLine.BeginAddress + InstructionLength;
+                        File.Add(tempLine);
+                        return;
                     }
                 }
-                EnumInstructions inst;
-                Int64 InstructionLength = 0;
-                if(tokens[0].GetInstruction(out inst))
-                {
-                    InstructionLength = Y86Sizes.GetInstructionSize(inst);
-                }
-                else
-                {
-                    throw new AssemblerException(EnumAssemblerStages.TokenFile, "Could not get instruction length");
-                }
-                TokenLine tempLine = new TokenLine();
-                tempLine.Tokens = tokens;
-                tempLine.BeginAddress = FileSize;
-                tempLine.EndAddress = tempLine.BeginAddress + InstructionLength;
-                File.Add(tempLine);
-                return;
             }
             throw new Exception("Tried to add empty line to token file");
         }
@@ -101,6 +154,28 @@ namespace YAS
         public bool ResolveLabels()
         {
             //Resolves labels on the Token File.
+            //Loop through all token lines and replace instances of label tokens with respective immediate tokens
+
+            for(int i = 0; i < File.Count; i++)
+            {
+                int index = File[i].ReturnLabelIndex();
+                if (index >= 0)
+                {
+                    string labelText = File[i].Tokens[index].Text;
+                    Int64 replaceLiteral = 0;
+                    if (LabelTable.ContainsKey(labelText)) {
+                        replaceLiteral = LabelTable[labelText];
+                    }
+                    else
+                    {
+                        throw new AssemblerException(EnumAssemblerStages.TokenFile, "LABEL RESOLVE - Could not find label in label table");
+                    }
+                    Token replacement = new Token((int)EnumTokenTypes.Immediate, "$" + replaceLiteral.ToString());
+                    replacement.AddProperty(EnumTokenProperties.ImmediateValue, replaceLiteral);
+                    File[i].Tokens[index] = replacement;
+                }
+                continue;
+            }
             throw new NotImplementedException();
         }
 

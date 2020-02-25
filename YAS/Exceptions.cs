@@ -36,7 +36,7 @@ namespace YAS
 
     public class AssemblerException : Exception
     {
-        public EnumAssemblerStages _Stage;
+        public EnumAssemblerStages _stage;
         public AssemblerException()
         {
         }
