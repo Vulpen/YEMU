@@ -28,6 +28,7 @@ namespace YAS
         //Todo: add cmov's
         add = 0,
         sub,
+        and,
         xor,
         imul,
         jmp,
@@ -369,7 +370,6 @@ namespace YAS
         /// <returns></returns>
         public static Int64 ParseImmediate(string Text)
         {
-            //Todo: change to return a bool for success state.
             string Temp = new string(Text);
             if (Text.StartsWith('$'))
             {

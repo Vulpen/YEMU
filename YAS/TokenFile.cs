@@ -9,6 +9,29 @@ namespace YAS
     {
         private Dictionary<EnumInstructions, int> Sizes;
 
+        public static Dictionary<EnumInstructions, int> AllSizes = new Dictionary<EnumInstructions, int>
+        {
+            {EnumInstructions.halt,  1},
+            {EnumInstructions.nop,   1},
+            {EnumInstructions.rrmov, 2},
+            {EnumInstructions.irmov, 10},
+            {EnumInstructions.rmmov, 10},
+            {EnumInstructions.mrmov, 10},
+            {EnumInstructions.ret,   1},
+            {EnumInstructions.push,  2},
+            {EnumInstructions.pop,   2},
+            {EnumInstructions.add,   2},
+            {EnumInstructions.sub,   2},
+            {EnumInstructions.imul,  2},
+            {EnumInstructions.xor,   2},
+            {EnumInstructions.jmp,   9},
+            {EnumInstructions.je,    9},
+            {EnumInstructions.jle,   9},
+            {EnumInstructions.jge,   9},
+            {EnumInstructions.jg,    9},
+            {EnumInstructions.jl,    9},
+        };
+
         public InstructionSize()
         {
             Sizes = new Dictionary<EnumInstructions, int>();
@@ -68,7 +91,7 @@ namespace YAS
         }
 
         /// <summary>
-        /// Returns index in the line of a label.
+        /// Returns index in the line of a label, -1 if there is no label in the line.
         /// </summary>
         /// <returns></returns>
         public int ReturnLabelIndex()
@@ -79,7 +102,7 @@ namespace YAS
                 {
                     EnumTokenTypes temp;
                     Tokens[i].GetTokenType(out temp);
-                    if (temp == EnumTokenTypes.Label)
+                    if (temp == EnumTokenTypes.Label || temp == EnumTokenTypes.Unkown)
                     {
                         return i;
                     }
@@ -100,6 +123,10 @@ namespace YAS
         private List<TokenLine> File;
         private Int64 FileSize;
         private InstructionSize Y86Sizes;
+        public int NumberOfLines
+        {
+            get { return File.Count; }
+        }
 
         public TokenFile()
         {
@@ -122,8 +149,11 @@ namespace YAS
                 {
                     if(type == EnumTokenTypes.Label)
                     {
-                        if(!LabelTable.ContainsKey(tokens[0].Text))
-                            LabelTable.Add(tokens[0].Text, FileSize);
+                        if (!LabelTable.ContainsKey(tokens[0].Text))
+                        {
+                            //tokens[0].Text = tokens[0].Text.Trim(':');
+                            LabelTable.Add(tokens[0].Text.Trim(':'), FileSize);
+                        }
                         return;
                     }
 
@@ -143,6 +173,7 @@ namespace YAS
                         tempLine.Tokens = tokens;
                         tempLine.BeginAddress = FileSize;
                         tempLine.EndAddress = tempLine.BeginAddress + InstructionLength;
+                        FileSize = tempLine.EndAddress;
                         File.Add(tempLine);
                         return;
                     }
@@ -169,6 +200,7 @@ namespace YAS
                     else
                     {
                         throw new AssemblerException(EnumAssemblerStages.TokenFile, "LABEL RESOLVE - Could not find label in label table");
+                        return false;
                     }
                     Token replacement = new Token((int)EnumTokenTypes.Immediate, "$" + replaceLiteral.ToString());
                     replacement.AddProperty(EnumTokenProperties.ImmediateValue, replaceLiteral);
@@ -176,17 +208,18 @@ namespace YAS
                 }
                 continue;
             }
-            throw new NotImplementedException();
+
+            return true;
         }
 
-        public Token[] GetLine(int index)
+        public TokenLine GetLine(int index)
         {
             if(index >=0 && index < File.Count)
             {
-                return File[index].Tokens;
+                return File[index];
             }
             throw new Exception("Attempt to access invalid index of token file");
-            return File[index].Tokens;
+            return File[index];
         }
 
         public TokenLine GetInstructionLine(Int64 Address)

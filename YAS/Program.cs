@@ -14,11 +14,13 @@ namespace YAS
     class Program
     {
         //static string PATH = @"E:\[]ProgrammingProjects\C#\YEMU\YAS\Examples\ex1.yas";
-        static string PATH = @"D:\[KEEP]ProgrammingProjects\C#\Y86Emulator\YAS\Examples\ex1.yas";
+        static string PATH = @"D:\[KEEP]ProgrammingProjects\C#\Y86Emulator\YAS\Examples\ex2.yas";
+        static string BIN_PATH = @"D:\[KEEP]ProgrammingProjects\C#\Y86Emulator\YAS\Examples\ex1.yin";
         static void Main(string[] args)
         {
             Parser YParser = new Parser(EnumVerboseLevels.All);
             TokenFile YFile = new TokenFile();
+            BinaryFileWriter YFileWriter = new BinaryFileWriter();
 
             if (!File.Exists(PATH))
             {
@@ -57,12 +59,31 @@ namespace YAS
                     }
                     catch (AssemblerException e)
                     {
+#if DEBUG
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("ERROR at stage : " + Enum.GetName(typeof(EnumAssemblerStages), e._stage) + " " + e.Message);
+                        Console.ResetColor();
+#endif
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine(e.Message);
                     }
+                }
+
+
+                try
+                {
+                    YFile.ResolveLabels();
+                    YFileWriter.WriteToFile(YFile, BIN_PATH);
+                }
+                catch (AssemblerException e)
+                {
+                    Console.WriteLine("ERROR at stage : " + Enum.GetName(typeof(EnumAssemblerStages), e._stage) + " " + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
                 }
 
                 int debug = 0;

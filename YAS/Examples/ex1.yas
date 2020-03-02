@@ -1,6 +1,7 @@
 ﻿#Assignment #3
 #Thomas Lowe
 prob1a: #Thomas Lowe
+ jmp prob1a
  irmovq $0x600110, %r9 #a
  irmovq $0x500064, %r10 #x
  irmovq $0x500990, %r11 #y
@@ -11,7 +12,6 @@ prob1a: #Thomas Lowe
  mrmovq (%r11), %rax
  addq %rax, %rcx
  rmmovq %rcx, (%r9)
- $0xFF
 prob1b:
  irmovq $0, %r8
  rrmovq %r8, %r9

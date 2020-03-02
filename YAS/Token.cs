@@ -12,6 +12,17 @@ namespace YAS
         private string _text;
         private Dictionary<EnumTokenProperties, Int64> Properties;
 
+        public EnumTokenTypes TokenType
+        {
+            //TODO Lets do something!
+            get {
+                EnumTokenTypes var;
+                if (GetTokenType(out var))
+                    return var;
+                return EnumTokenTypes.Unkown;
+            }
+        }
+
         public Token()
         {
             Properties = new Dictionary<EnumTokenProperties, long>();
@@ -56,6 +67,7 @@ namespace YAS
         public string Text
         {
             get { return _text; }
+            //set { _text = value; }
         }
 
         public bool AddProperty(EnumTokenProperties key, Int64 val)
