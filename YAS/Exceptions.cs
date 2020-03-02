@@ -37,7 +37,7 @@ namespace YAS
     public class AssemblerException : Exception
     {
         public EnumAssemblerStages _stage;
-        public AssemblerException()
+        public AssemblerException() : base()
         {
         }
 
@@ -50,5 +50,26 @@ namespace YAS
         {
             _stage = stage;
         }
+    }
+
+    public class TokenAccessException : Exception
+    {
+        public Token _Tkn;
+        public EnumTokenProperties _Property;
+        public TokenAccessException() : base()
+        {
+
+        }
+
+        public TokenAccessException(Token token) : base()
+        {
+            _Tkn = token.DeepCopy();
+        }
+
+        public TokenAccessException(Token token, string str) : base(str)
+        {
+            _Tkn = token.DeepCopy();
+        }
+
     }
 }

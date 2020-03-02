@@ -14,7 +14,7 @@ namespace YAS
     class Program
     {
         //static string PATH = @"E:\[]ProgrammingProjects\C#\YEMU\YAS\Examples\ex1.yas";
-        static string PATH = @"D:\[KEEP]ProgrammingProjects\C#\Y86Emulator\YAS\Examples\ex2.yas";
+        static string PATH = @"D:\[KEEP]ProgrammingProjects\C#\Y86Emulator\YAS\Examples\ex1.yas";
         static string BIN_PATH = @"D:\[KEEP]ProgrammingProjects\C#\Y86Emulator\YAS\Examples\ex1.yin";
         static void Main(string[] args)
         {
@@ -34,6 +34,7 @@ namespace YAS
             {
                 string CurrentLine;
                 Token[] currentTokens;
+                Console.WriteLine("Lexical analysis and parsing...");
                 while (!readStream.EndOfStream)
                 {
                     CurrentLine = String.Empty;
@@ -57,24 +58,45 @@ namespace YAS
                         //Console.WriteLine("ERROR : Unexpected Token " + e.token1.Text + " On Line : " + LineNumber + "|" + CurrentLine);
                         Console.WriteLine($"ERROR : Unexpected Token {e.token1.Text} On Line : {LineNumber} | {CurrentLine}");
                     }
+#if DEBUG
                     catch (AssemblerException e)
                     {
-#if DEBUG
+
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("ERROR at stage : " + Enum.GetName(typeof(EnumAssemblerStages), e._stage) + " " + e.Message);
-                        Console.ResetColor();
-#endif
+
+                    }
+                    catch(TokenAccessException e)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        if (e._Tkn != null)
+                        {
+                            Console.WriteLine("ERROR accessing token: " + e.Message);
+                            Console.WriteLine(e._Tkn.TokenInfoString());
+                        }
+                        else
+                        {
+                            Console.WriteLine("ERROR accessing token: " + e.Message);
+                        }
                     }
                     catch (Exception e)
                     {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine(e.Message);
                     }
+                    finally
+                    {
+                        Console.ResetColor();
+                    }
+#endif
                 }
 
 
                 try
                 {
+                    Console.WriteLine("Second pass...");
                     YFile.ResolveLabels();
+                    Console.WriteLine("Writing to file...");
                     YFileWriter.WriteToFile(YFile, BIN_PATH);
                 }
                 catch (AssemblerException e)

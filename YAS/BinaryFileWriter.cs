@@ -67,7 +67,7 @@ namespace YAS
                             break;
                         case EnumInstructions.irmov:
                             if (currentTokenLine.Tokens.Length != 3)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in RRMOV instruction.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in IRMOV instruction.");
 
                             filestream.Write((byte)48);
 
@@ -83,7 +83,7 @@ namespace YAS
                             break;
                         case EnumInstructions.rmmov:
                             if (currentTokenLine.Tokens.Length != 3)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in RRMOV instruction.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in RMMOV instruction.");
 
                             filestream.Write((byte)64);
 
@@ -107,7 +107,7 @@ namespace YAS
                             break;
                         case EnumInstructions.mrmov:
                             if (currentTokenLine.Tokens.Length != 3)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in RRMOV instruction.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in MRMOV instruction.");
 
                             filestream.Write((byte)80);
 
@@ -131,7 +131,7 @@ namespace YAS
                             break;
                         case EnumInstructions.add:
                             if (currentTokenLine.Tokens.Length != 3)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in RRMOV instruction.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in ADD instruction.");
 
                             filestream.Write((byte)96);
 
@@ -148,7 +148,7 @@ namespace YAS
                             break;
                         case EnumInstructions.sub:
                             if (currentTokenLine.Tokens.Length != 3)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in RRMOV instruction.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in SUB instruction.");
 
                             filestream.Write((byte)(96 + 1));
 
@@ -165,7 +165,7 @@ namespace YAS
                             break;
                         case EnumInstructions.and:
                             if (currentTokenLine.Tokens.Length != 3)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in RRMOV instruction.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in AND instruction.");
 
                             filestream.Write((byte)(96 + 2));
 
@@ -182,7 +182,7 @@ namespace YAS
                             break;
                         case EnumInstructions.xor:
                             if (currentTokenLine.Tokens.Length != 3)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in RRMOV instruction.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in XOR instruction.");
 
                             filestream.Write((byte)(96 + 3));
 
@@ -199,7 +199,7 @@ namespace YAS
                             break;
                         case EnumInstructions.imul:
                             if (currentTokenLine.Tokens.Length != 3)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in RRMOV instruction.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in IMUL instruction.");
 
                             filestream.Write((byte)(96 + 4));
 
@@ -216,7 +216,7 @@ namespace YAS
                             break;
                         case EnumInstructions.jmp:
                             if (currentTokenLine.Tokens.Length != 2)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in RRMOV instruction.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in JMP instruction.");
 
                             filestream.Write((byte)112);
 
@@ -227,10 +227,95 @@ namespace YAS
                             WriteBytes(someBytes, filestream);
                             break;
                         case EnumInstructions.jle:
+                            if (currentTokenLine.Tokens.Length != 2)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in JLE instruction.");
+
+                            filestream.Write((byte)(112 + 1));
+
+                            if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+
+                            someBytes = BitConverter.GetBytes(someProperty);
+                            WriteBytes(someBytes, filestream);
+                            break;
                         case EnumInstructions.jl:
+                            if (currentTokenLine.Tokens.Length != 2)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in JL instruction.");
+
+                            filestream.Write((byte)(112 + 2));
+
+                            if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+
+                            someBytes = BitConverter.GetBytes(someProperty);
+                            WriteBytes(someBytes, filestream);
+                            break;
                         case EnumInstructions.je:
+                            if (currentTokenLine.Tokens.Length != 2)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in JE instruction.");
+
+                            filestream.Write((byte)(112 + 3));
+
+                            if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+
+                            someBytes = BitConverter.GetBytes(someProperty);
+                            WriteBytes(someBytes, filestream);
+                            break;
+                        case EnumInstructions.jne:
+                            if (currentTokenLine.Tokens.Length != 2)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in JNE instruction.");
+
+                            filestream.Write((byte)(112 + 4));
+
+                            if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+
+                            someBytes = BitConverter.GetBytes(someProperty);
+                            WriteBytes(someBytes, filestream);
+                            break;
+                        case EnumInstructions.jge:
+                            if (currentTokenLine.Tokens.Length != 2)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in JGE instruction.");
+
+                            filestream.Write((byte)(112 + 5));
+
+                            if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+
+                            someBytes = BitConverter.GetBytes(someProperty);
+                            WriteBytes(someBytes, filestream);
+                            break;
+                        case EnumInstructions.jg:
+                            if (currentTokenLine.Tokens.Length != 2)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in JG instruction.");
+
+                            filestream.Write((byte)(112 + 6));
+
+                            if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+
+                            someBytes = BitConverter.GetBytes(someProperty);
+                            WriteBytes(someBytes, filestream);
+                            break;
                         case EnumInstructions.call:
+                            if (currentTokenLine.Tokens.Length != 2)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in CALL instruction.");
+
+                            filestream.Write((byte)128);
+
+                            if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+
+                            someBytes = BitConverter.GetBytes(someProperty);
+                            WriteBytes(someBytes, filestream);
+                            break;
                         case EnumInstructions.ret:
+                            if (currentTokenLine.Tokens.Length != 1)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in RET instruction.");
+
+                            filestream.Write((byte)144);
+                            break;
                         case EnumInstructions.push:
                         case EnumInstructions.pop:
                         default:

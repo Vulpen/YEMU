@@ -1,1 +1,1 @@
-irmovq $67, %r8
+addq %rax, %rbx

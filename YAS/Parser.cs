@@ -221,7 +221,11 @@ namespace YAS
                 EnumTokenTypes token2Type;
                 if (tkns[1].GetTokenType(out token1Type) && tkns[2].GetTokenType(out token2Type))
                 {
-                    if ((token1Type == EnumTokenTypes.Register || token1Type == EnumTokenTypes.Immediate) && token2Type == EnumTokenTypes.Register)
+                    if(token1Type == EnumTokenTypes.Immediate)
+                    {
+                        throw new FoundUnexpectedToken("Illegal immediate used in arithmetic operation");
+                    }
+                    if ((token1Type == EnumTokenTypes.Register) && token2Type == EnumTokenTypes.Register)
                     {
                         return true;
                     }

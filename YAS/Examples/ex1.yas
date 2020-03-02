@@ -5,9 +5,10 @@ prob1a: #Thomas Lowe
  irmovq $0x600110, %r9 #a
  irmovq $0x500064, %r10 #x
  irmovq $0x500990, %r11 #y
- addq $80, %r9
- addq $80, %r10
- addq $80, %r11
+ irmovq $80, %r12
+ addq %r12, %r9
+ addq %r12, %r10
+ addq %r12, %r11
  mrmovq (%r10), %rcx
  mrmovq (%r11), %rax
  addq %rax, %rcx
@@ -15,15 +16,18 @@ prob1a: #Thomas Lowe
 prob1b:
  irmovq $0, %r8
  rrmovq %r8, %r9
- subq $10, %r9
+ irmovq $10, %r12
+ subq %r12, %r9
  #else code
  jge done
  loop:
  mrmovq (%rdx), %r10
- addq $10, %r10
+ addq %r12, %r10
  rmmovq %r10, (%rdx)
- addq $1, %r8
- addq $8, %rdx
+ irmovq $1, %r12
+ addq %r12, %r8
+ irmovq $8, %r12
+ addq %r12, %rdx
  rrmovq %r8, %r9
  subq $10, %r9
  jl loop
