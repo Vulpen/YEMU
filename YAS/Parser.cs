@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using YLib;
 
 namespace YAS
 {
+
+
     public enum EnumTokenTypes
     {
         Instruction = 0,
@@ -142,10 +145,13 @@ namespace YAS
                 return null;
             }
             Console.WriteLine("Successfully parsed " + str);
-            //If tokens_output
-            for(int i = 0; i < ParsedTokens.Length; i++)
+
+            if (_verbosityLevel == EnumVerboseLevels.All)
             {
-                Console.Write(ParsedTokens[i].TokenInfoString());
+                for (int i = 0; i < ParsedTokens.Length; i++)
+                {
+                    Console.Write(ParsedTokens[i].TokenInfoString());
+                }
             }
             return ParsedTokens;
         }

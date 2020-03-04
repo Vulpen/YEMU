@@ -5,4 +5,10 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="YAS\**" />
+    <EmbeddedResource Remove="YAS\**" />
+    <None Remove="YAS\**" />
+  </ItemGroup>
+
 </Project>

@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using YLib;
 
 namespace YAS
 {
-    enum EnumVerboseLevels
-    {
-        None = 0,
-        Little,
-        All
-    }
+
 
     class Program
     {
