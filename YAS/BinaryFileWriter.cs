@@ -57,7 +57,7 @@ namespace YAS
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.RegisterNumber, out rA))
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token does not contain register code.");
 
-                            if (!currentTokenLine.Tokens[2].GetProperty(EnumTokenProperties.RegisterNumber, out rB) || currentTokenLine.Tokens[2].TokenType != EnumTokenTypes.AddressRegister)
+                            if (!currentTokenLine.Tokens[2].GetProperty(EnumTokenProperties.RegisterNumber, out rB) || currentTokenLine.Tokens[2].TokenType != EnumTokenTypes.Register)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token does not contain register code.");
 
                             tmpInt = rA << 4;
@@ -88,14 +88,14 @@ namespace YAS
                             filestream.Write((byte)64);
 
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.RegisterNumber, out rA) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Register)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected register value.");
 
                             if (!currentTokenLine.Tokens[2].GetProperty(EnumTokenProperties.RegisterNumber, out rB) || currentTokenLine.Tokens[2].TokenType != EnumTokenTypes.AddressRegister)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected address register value.");
 
                             //someProperty represents the offset of destination memory address
                             if (!currentTokenLine.Tokens[2].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty))
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+                                someProperty = 0;
 
                             tmpInt = rA << 4;
                             tmpInt = tmpInt | rB;
@@ -112,14 +112,14 @@ namespace YAS
                             filestream.Write((byte)80);
 
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.RegisterNumber, out rA) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.AddressRegister)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected address register value.");
 
                             if (!currentTokenLine.Tokens[2].GetProperty(EnumTokenProperties.RegisterNumber, out rB) || currentTokenLine.Tokens[2].TokenType != EnumTokenTypes.Register)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
 
                             //someProperty represents the offset of destination memory address
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty))
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+                                someProperty = 0;
 
                             tmpInt = rA << 4;
                             tmpInt = tmpInt | rB;
@@ -136,10 +136,10 @@ namespace YAS
                             filestream.Write((byte)96);
 
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.RegisterNumber, out rA) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Register)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected register value.");
 
                             if (!currentTokenLine.Tokens[2].GetProperty(EnumTokenProperties.RegisterNumber, out rB) || currentTokenLine.Tokens[2].TokenType != EnumTokenTypes.Register)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected register value.");
 
                             tmpInt = rA << 4;
                             tmpInt = tmpInt | rB;
@@ -153,10 +153,10 @@ namespace YAS
                             filestream.Write((byte)(96 + 1));
 
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.RegisterNumber, out rA) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Register)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected register value.");
 
                             if (!currentTokenLine.Tokens[2].GetProperty(EnumTokenProperties.RegisterNumber, out rB) || currentTokenLine.Tokens[2].TokenType != EnumTokenTypes.Register)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected register value.");
 
                             tmpInt = rA << 4;
                             tmpInt = tmpInt | rB;
@@ -170,10 +170,10 @@ namespace YAS
                             filestream.Write((byte)(96 + 2));
 
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.RegisterNumber, out rA) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Register)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected register value.");
 
                             if (!currentTokenLine.Tokens[2].GetProperty(EnumTokenProperties.RegisterNumber, out rB) || currentTokenLine.Tokens[2].TokenType != EnumTokenTypes.Register)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected register value.");
 
                             tmpInt = rA << 4;
                             tmpInt = tmpInt | rB;
@@ -187,10 +187,10 @@ namespace YAS
                             filestream.Write((byte)(96 + 3));
 
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.RegisterNumber, out rA) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Register)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected register value.");
 
                             if (!currentTokenLine.Tokens[2].GetProperty(EnumTokenProperties.RegisterNumber, out rB) || currentTokenLine.Tokens[2].TokenType != EnumTokenTypes.Register)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected register value.");
 
                             tmpInt = rA << 4;
                             tmpInt = tmpInt | rB;
@@ -204,10 +204,10 @@ namespace YAS
                             filestream.Write((byte)(96 + 4));
 
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.RegisterNumber, out rA) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Register)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected register value.");
 
                             if (!currentTokenLine.Tokens[2].GetProperty(EnumTokenProperties.RegisterNumber, out rB) || currentTokenLine.Tokens[2].TokenType != EnumTokenTypes.Register)
-                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected register value.");
 
                             tmpInt = rA << 4;
                             tmpInt = tmpInt | rB;

@@ -90,8 +90,7 @@ namespace YAS
                 val = Properties[key];
                 return true;
             }
-            //throw new NullReferenceException("Could not get property on token: " + _text);
-            throw new TokenAccessException(this, "Failed on accessing property: " + Enum.GetName(typeof(EnumTokenProperties), key));
+            //throw new TokenAccessException(this, "Failed on accessing property: " + Enum.GetName(typeof(EnumTokenProperties), key));
             return false;
         }
 
@@ -103,8 +102,7 @@ namespace YAS
                 val = (int)Properties[key];
                 return true;
             }
-            //throw new NullReferenceException("Could not get property on token: " + _text);
-            throw new TokenAccessException(this, "Failed on accessing property: " + Enum.GetName(typeof(EnumTokenProperties), key));
+            //throw new TokenAccessException(this, "Failed on accessing property: " + Enum.GetName(typeof(EnumTokenProperties), key));
             return false;
         }
 
