@@ -2,40 +2,40 @@
 #Thomas Lowe
 prob1a: #Thomas Lowe
  jmp prob1a
- irmovq $0x600110, %r9 #a
- irmovq $0x500064, %r10 #x
- irmovq $0x500990, %r11 #y
- irmovq $80, %r12
- addq %r12, %r9
- addq %r12, %r10
- addq %r12, %r11
- mrmovq (%r10), %rcx
- mrmovq (%r11), %rax
- addq %rax, %rcx
- rmmovq %rcx, (%r9)
+ irmovl $0x600110, %r9 #a
+ irmovl $0x500064, %r10 #x
+ irmovl $0x500990, %r11 #y
+ irmovl $80, %r12
+ addl %r12, %r9
+ addl %r12, %r10
+ addl %r12, %r11
+ mrmovl (%r10), %rcx
+ mrmovl (%r11), %rax
+ addl %rax, %rcx
+ rmmovl %rcx, (%r9)
 prob1b:
- irmovq $0, %r8
- rrmovq %r8, %r9
- irmovq $10, %r12
- subq %r12, %r9
+ irmovl $0, %r8
+ rrmovl %r8, %r9
+ irmovl $10, %r12
+ subl %r12, %r9
  #else code
  jge done
  loop:
- mrmovq (%rdx), %r10
- addq %r12, %r10
- rmmovq %r10, (%rdx)
- irmovq $1, %r12
- addq %r12, %r8
- irmovq $8, %r12
- addq %r12, %rdx
- rrmovq %r8, %r9
- irmovq $10, %r12
- subq %r12, %r9
+ mrmovl (%rdx), %r10
+ addl %r12, %r10
+ rmmovl %r10, (%rdx)
+ irmovl $1, %r12
+ addl %r12, %r8
+ irmovl $8, %r12
+ addl %r12, %rdx
+ rrmovl %r8, %r9
+ irmovl $10, %r12
+ subl %r12, %r9
  jl loop
  done:
 prob2:
- mrmovq $40(%rax), %rbx
- irmovq $-65, %r12
- irmovq %r12, %rcx
- addq %rcx, %rbx
- rmmovq %rbx, $40(%rax)
+ mrmovl $40(%rax), %rbx
+ irmovl $-65, %r12
+ irmovl %r12, %rcx
+ addl %rcx, %rbx
+ rmmovl %rbx, $40(%rax)

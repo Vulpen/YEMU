@@ -7,6 +7,7 @@ namespace YAS
 {
     /// <summary>
     /// A Registry of Keyword tokens in the Y86 language.
+    /// Each Token contains it's type (instruction, register, addressregister)
     /// </summary>
     class Keywords
     {
@@ -45,9 +46,9 @@ namespace YAS
         public void GenerateTokens(ref List<Token> tknList)
         {
             //-----Instructions
-            tknList.Add(new Token((Int64)EnumTokenTypes.Instruction, (Int64)EnumInstructions.add, "addq"));
-            tknList.Add(new Token((Int64)EnumTokenTypes.Instruction, (Int64)EnumInstructions.sub, "subq"));
-            tknList.Add(new Token((Int64)EnumTokenTypes.Instruction, (Int64)EnumInstructions.xor, "xorq"));
+            tknList.Add(new Token((Int64)EnumTokenTypes.Instruction, (Int64)EnumInstructions.add, "addl"));
+            tknList.Add(new Token((Int64)EnumTokenTypes.Instruction, (Int64)EnumInstructions.sub, "subl"));
+            tknList.Add(new Token((Int64)EnumTokenTypes.Instruction, (Int64)EnumInstructions.xor, "xorl"));
             AddInstructionToken(tknList, "jmp", EnumInstructions.jmp);
             AddInstructionToken(tknList, "jle", EnumInstructions.jle);
             AddInstructionToken(tknList, "jl", EnumInstructions.jl);
@@ -55,10 +56,10 @@ namespace YAS
             AddInstructionToken(tknList, "jne", EnumInstructions.jne);
             AddInstructionToken(tknList, "jge", EnumInstructions.jge);
             AddInstructionToken(tknList, "jg", EnumInstructions.jg);
-            AddInstructionToken(tknList, "irmovq", EnumInstructions.irmov);
-            AddInstructionToken(tknList, "rrmovq", EnumInstructions.rrmov);
-            AddInstructionToken(tknList, "mrmovq", EnumInstructions.mrmov);
-            AddInstructionToken(tknList, "rmmovq", EnumInstructions.rmmov);
+            AddInstructionToken(tknList, "irmovl", EnumInstructions.irmov);
+            AddInstructionToken(tknList, "rrmovl", EnumInstructions.rrmov);
+            AddInstructionToken(tknList, "mrmovl", EnumInstructions.mrmov);
+            AddInstructionToken(tknList, "rmmovl", EnumInstructions.rmmov);
 
             //-----Registers
             AddRegisterToken(tknList, "%rax", EnumRegisters.rax);
@@ -95,6 +96,10 @@ namespace YAS
             AddAddressRegisterToken(tknList, "(%r14)", EnumRegisters.r14);
         }
 
+        /// <summary>
+        /// This will find if the string val is an existing keyword in Y86.
+        /// </summary>
+        /// <returns></returns>
         public bool IsKeyword(string val, ref Token tkn)
         {
             for (int i = 0; i < keys.Count; i++)

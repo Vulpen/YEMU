@@ -26,6 +26,7 @@ namespace YAS
         /// <returns></returns>
         public Token[] ParseString(string str)
         {
+            //Trim string----
             str = str.Trim();
             string[] line = str.Split(' ');
             if(line.Length < 1)
@@ -37,7 +38,10 @@ namespace YAS
             {
                 return null;
             }
+            //End trim------
 
+
+            //Check if should be ignored: comments, etc.
             for(int i = 0; i < line.Length; i++)
             {
                 if(line[i].StartsWith("//") || line[i].StartsWith("#"))
@@ -49,6 +53,7 @@ namespace YAS
                     }
                     else
                     {
+                        //Allows putting comments on the same line as instructions
                         string[] replace = new string[i];
                         for(int j = 0; j < i; j++)
                         {
@@ -60,16 +65,18 @@ namespace YAS
                 }
                 line[i] = line[i].TrimEnd(',');
             }
+            //
+
 
             Token[] ParsedTokens = new Token[line.Length];
 
-            //Lexer
+            //Lexer - Turn string into array of tokens
             if(!SimpleKeywordParse(line, ref ParsedTokens))
             {
                 Console.WriteLine("Failed line on lexing |" + str);
                 return null;
             }
-            //Parser
+            //Parser - Finish populating array of tokens based on their context, and check if the array of tokens makes sense
             if (!ContextParse(ParsedTokens))
             {
                 Console.WriteLine("Failed on parsing |" + str);
@@ -88,7 +95,7 @@ namespace YAS
         }
 
         /// <summary>
-        /// This is a naive parse that loops through every unit in the string and determines if each one is a label, immediate, instruction etc.
+        /// This loops through every unit in the string and determines if each one is a label, immediate, instruction etc.
         /// </summary>
         /// <returns></returns>
         private bool SimpleKeywordParse(string[] units, ref Token[] tokens)
@@ -98,6 +105,8 @@ namespace YAS
             {
                 Token temp = null;
                 if (YKeywords.IsKeyword(units[i], ref temp)){
+                    //First, check if the string is an existing keyword.
+                    //If not, it will be a label, immediate, or an address register with offset
                     tokens[i] = temp;
                 }
                 else
@@ -112,26 +121,17 @@ namespace YAS
 
                     if (units[i].StartsWith('$'))
                     {
-                        //Can be an immediate, or a memory address stored in a register WITH an offset, which would be an address register.
+                        //Can be an immediate, or an address register with offset
                         Int64 ImmediateVal = 0;
                         if (units[i].Contains("("))
                         {
-                            int j = 0;
-                            while(j < units[i].Length)
-                            {
-                                if(units[i][j] == '(')
-                                {
-                                    //0 to j-1 is the immediate
-                                    //Convert and add the property as an offset to the AddressRegister
-                                    ImmediateVal = MathConversion.ParseImmediate(units[i].Substring(0, j));
-                                    break;
-                                }
-                                j++;
-                            }
+                            //Address register with offset, error if no immediate!
+                            int j = units[i].IndexOf("(");
+                            ImmediateVal = MathConversion.ParseImmediate(units[i].Substring(0, j-1));
                             units[i] = units[i].Substring(j);
                             if (YKeywords.IsKeyword(units[i], ref temp))
                             {
-                                temp.AddProperty(EnumTokenProperties.ImmediateValue, ImmediateVal);
+                                temp.AddProperty(EnumTokenProperties.ImmediateValue, ImmediateVal); //ImmediateValue holds the offset!
                                 tokens[i] = temp;
                                 continue;
                             }
@@ -279,74 +279,6 @@ namespace YAS
                     break;
             }
             return false;
-        }
-    }
-
-    class MathConversion
-    {
-        public static bool ConvertHexToInt(string HexString, out Int64 returnNumber)
-        {
-            throw new NotImplementedException("Hex Conversion Not Supported Yet.");
-        }
-
-        public static bool ConvertHexToInt(string HexString, out int returnNumber)
-        {
-            throw new NotImplementedException("Hex Conversion Not Supported Yet.");
-        }
-
-        public static bool ConvertIntToHex(Int64 Number, out string HexString)
-        {
-            throw new NotImplementedException("Hex Conversion Not Supported Yet.");
-        }
-
-        public static bool ConvertIntToHex(int Number, out string HexString)
-        {
-            throw new NotImplementedException("Hex Conversion Not Supported Yet.");
-        }
-
-        /// <summary>
-        /// Parse an immediate in Y86 language to an Int64
-        /// </summary>
-        /// <param name="Text"></param>
-        /// <returns></returns>
-        public static Int64 ParseImmediate(string Text)
-        {
-            string Temp = new string(Text);
-            if (Text.StartsWith('$'))
-            {
-                //Check if it is an immediate, might be redundant.
-                Temp = Temp.Substring(1);
-                if (Temp.StartsWith("0x") || Temp.StartsWith("0X"))
-                {
-                    //Treat as Hex
-                    Temp = Temp.Substring(2);
-                    Int64 number;
-                    //MathConversion.ConvertHexToInt(Temp, out number);
-                    if(Int64.TryParse(Temp, System.Globalization.NumberStyles.HexNumber, null, out number))
-                    {
-                        return number;
-                    }
-                }
-                else
-                {
-                    //Treat as Decimal
-                    Int64 number;
-                    if (Int64.TryParse(Temp, out number))
-                    {
-                        return number;
-                    }
-                }
-            }
-            throw new AssemblerException(EnumAssemblerStages.Utility, "Could not parse " + Text + " to integer");
-            return -1;
-        }
-
-        public static bool Int64ToHexString(Int64 number, int padToLength, out string hexString)
-        {
-            hexString = String.Empty;
-            hexString = number.ToString("X");
-            hexString = hexString.PadLeft(padToLength, '0');
-            return true;
         }
     }
 }
