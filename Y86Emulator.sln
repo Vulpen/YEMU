@@ -9,7 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Y86SEQEmulator", "Y86SEQEmu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YAS", "YAS\YAS.csproj", "{5E2F47CA-A756-4DA5-8C38-2E8F89B6976A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YLib", "..\YLib\YLib.csproj", "{D738AC04-FE28-489D-A92B-552931CE40AC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{80B31C46-111D-4A24-8847-89AFD49760AE}"
+	ProjectSection(SolutionItems) = preProject
+		YLib\YLib.csproj = YLib\YLib.csproj
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +32,6 @@ Global
 		{5E2F47CA-A756-4DA5-8C38-2E8F89B6976A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E2F47CA-A756-4DA5-8C38-2E8F89B6976A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E2F47CA-A756-4DA5-8C38-2E8F89B6976A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D738AC04-FE28-489D-A92B-552931CE40AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D738AC04-FE28-489D-A92B-552931CE40AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D738AC04-FE28-489D-A92B-552931CE40AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D738AC04-FE28-489D-A92B-552931CE40AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
