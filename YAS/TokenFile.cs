@@ -141,7 +141,7 @@ namespace YAS
                     }
                     else
                     {
-                        throw new AssemblerException(EnumAssemblerStages.TokenFile, "LABEL RESOLVE - Could not find label in label table");
+                        throw new FoundUnexpectedToken(File[i].Tokens[index].DeepCopy(), "Could not find label in label table");
                         return false;
                     }
                     Token replacement = new Token((int)EnumTokenTypes.Immediate, "$" + replaceLiteral.ToString());

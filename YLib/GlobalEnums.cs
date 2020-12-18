@@ -17,6 +17,7 @@ namespace YLib
         Immediate,
         Label,
         Unkown,
+        AssemblerDirective
     }
 
     public enum EnumTokenProperties
@@ -26,7 +27,27 @@ namespace YLib
         OpSizeBytes,  //stores 1, 2, 4, 8 if size is added
         ImmediateValue, //If is immediate, stores the value
         RealInstruction, //Corresponds to EnumInstructions
-        RegisterNumber   //Corresponds to EnumRegisters
+        RegisterNumber,   //Corresponds to EnumRegisters
+        AssemblerDirective,      //Corresponds to AssemblerDirectives
+        InstructionSize
+    }
+
+    public enum EnumAssemblerDirectives
+    {
+        Position,
+        Align,
+        Byte,       // 1 Byte
+        Word,       // 2 Bytes
+        Long,       // 4 Bytes
+        Quad        // 8 Bytes
+    }
+
+    public enum EnumInstructionSizes
+    {
+        Byte,
+        Word,
+        Long,
+        Quad
     }
 
     public enum EnumInstructions

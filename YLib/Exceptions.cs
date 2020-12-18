@@ -15,6 +15,11 @@ namespace YLib
             token1 = tkn;
         }
 
+        public FoundUnexpectedToken(Token tkn, string message) : base(message)
+        {
+
+        }
+
         public FoundUnexpectedToken(string message) : base(message)
         {
 
@@ -52,6 +57,8 @@ namespace YLib
             _stage = stage;
         }
     }
+
+
 
     /// <summary>
     /// Thrown when an expected element is not contained in a token.

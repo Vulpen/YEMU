@@ -13,7 +13,7 @@ namespace YAS
         //static string BIN_PATH = @"E:\[]ProgrammingProjects\C#\YEMU\YAS\Examples\ex1.yin";
         static void Main(string[] args)
         {
-            //When made into 
+            //When made into a CLI, handle arguments here
 
             Assembler.AssembleFile(PATH, BIN_PATH);
 

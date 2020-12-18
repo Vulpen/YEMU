@@ -19,11 +19,12 @@ namespace YAS
             GenerateTokens(ref keys);
         }
 
-        public void AddInstructionToken(List<Token> tokens, string str, EnumInstructions instructionEnum)
+        public void AddInstructionToken(List<Token> tokens, string str, EnumInstructions instructionEnum, EnumInstructionSizes instructionSize = EnumInstructionSizes.Long)
         {
             Token tkn = new Token(str);
             tkn.AddProperty(EnumTokenProperties.TokenType, (Int64)EnumTokenTypes.Instruction);
             tkn.AddProperty(EnumTokenProperties.RealInstruction, (Int64)instructionEnum);
+            tkn.AddProperty(EnumTokenProperties.InstructionSize, (Int64)instructionSize);
             tokens.Add(tkn);
         }
 
@@ -40,6 +41,14 @@ namespace YAS
             Token tkn = new Token(str);
             tkn.AddProperty(EnumTokenProperties.TokenType, (Int64)EnumTokenTypes.AddressRegister);
             tkn.AddProperty(EnumTokenProperties.RegisterNumber, (Int64)registerEnum);
+            tokens.Add(tkn);
+        }
+
+        private void AddAssemblerDirectiveToken(List<Token> tokens, string str, EnumAssemblerDirectives assemblerDirective)
+        {
+            Token tkn = new Token(str);
+            tkn.AddProperty(EnumTokenProperties.TokenType, (Int64)EnumTokenTypes.AssemblerDirective);
+            tkn.AddProperty(EnumTokenProperties.AssemblerDirective, (Int64)assemblerDirective);
             tokens.Add(tkn);
         }
 
@@ -94,6 +103,15 @@ namespace YAS
             AddAddressRegisterToken(tknList, "(%r12)", EnumRegisters.r12);
             AddAddressRegisterToken(tknList, "(%r13)", EnumRegisters.r13);
             AddAddressRegisterToken(tknList, "(%r14)", EnumRegisters.r14);
+
+
+            //-----Assembler Directives
+            AddAssemblerDirectiveToken(tknList, ".pos", EnumAssemblerDirectives.Position);
+            AddAssemblerDirectiveToken(tknList, ".align", EnumAssemblerDirectives.Align);
+            AddAssemblerDirectiveToken(tknList, ".byte", EnumAssemblerDirectives.Byte);
+            AddAssemblerDirectiveToken(tknList, ".word", EnumAssemblerDirectives.Word);
+            AddAssemblerDirectiveToken(tknList, ".long", EnumAssemblerDirectives.Long);
+            AddAssemblerDirectiveToken(tknList, ".quad", EnumAssemblerDirectives.Quad);
         }
 
         /// <summary>

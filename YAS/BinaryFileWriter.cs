@@ -44,16 +44,19 @@ namespace YAS
                     switch (first_instruction)
                     {
                         case EnumInstructions.halt:
+                            //0x00
                             filestream.Write((byte)0);
                             break;
                         case EnumInstructions.nop:
+                            //0x10
                             filestream.Write((byte)16);
                             break;
                         case EnumInstructions.rrmov:
+                            //0x20<rA><rB>
                             if (currentTokenLine.Tokens.Length != 3)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in RRMOV instruction.");
 
-                            filestream.Write((byte)32);
+                            filestream.Write((byte)32);//0x20
 
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.RegisterNumber, out rA))
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token does not contain register code.");
@@ -63,10 +66,11 @@ namespace YAS
 
                             tmpInt = rA << 4;
                             tmpInt = tmpInt | rB;
-                            filestream.Write((byte)tmpInt);
+                            filestream.Write((byte)tmpInt);//0x<rA><rB>
                             tmpInt = 0;
                             break;
                         case EnumInstructions.irmov:
+                            //0x30<F><rB><V>
                             if (currentTokenLine.Tokens.Length != 3)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in IRMOV instruction.");
 
@@ -79,10 +83,11 @@ namespace YAS
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected address register.");
 
                             filestream.Write((byte)(rB + 240));//Write byte F,rB
-                            someBytes = BitConverter.GetBytes(someProperty);
+                            someBytes = BitConverter.GetBytes((uint)someProperty);
                             WriteBytes(someBytes, filestream);
                             break;
                         case EnumInstructions.rmmov:
+                            //0x40<rA><rB><D> Where D is offset to address in register B (rB).
                             if (currentTokenLine.Tokens.Length != 3)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in RMMOV instruction.");
 
@@ -103,10 +108,11 @@ namespace YAS
                             filestream.Write((byte)tmpInt);
                             tmpInt = 0;
 
-                            someBytes = BitConverter.GetBytes(someProperty);
+                            someBytes = BitConverter.GetBytes((uint)someProperty);
                             WriteBytes(someBytes, filestream);
                             break;
                         case EnumInstructions.mrmov:
+                            //0x50<rA><rB><D> Where D is offset to address in register A (rA).
                             if (currentTokenLine.Tokens.Length != 3)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in MRMOV instruction.");
 
@@ -127,7 +133,7 @@ namespace YAS
                             filestream.Write((byte)tmpInt);
                             tmpInt = 0;
 
-                            someBytes = BitConverter.GetBytes(someProperty);
+                            someBytes = BitConverter.GetBytes((uint)someProperty);
                             WriteBytes(someBytes, filestream);
                             break;
                         case EnumInstructions.add:
@@ -216,6 +222,7 @@ namespace YAS
                             tmpInt = 0;
                             break;
                         case EnumInstructions.jmp:
+                            //0x7<fn><Dest>
                             if (currentTokenLine.Tokens.Length != 2)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in JMP instruction.");
 
@@ -224,7 +231,7 @@ namespace YAS
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
 
-                            someBytes = BitConverter.GetBytes(someProperty);
+                            someBytes = BitConverter.GetBytes((uint)someProperty);
                             WriteBytes(someBytes, filestream);
                             break;
                         case EnumInstructions.jle:
@@ -236,7 +243,7 @@ namespace YAS
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
 
-                            someBytes = BitConverter.GetBytes(someProperty);
+                            someBytes = BitConverter.GetBytes((uint)someProperty);
                             WriteBytes(someBytes, filestream);
                             break;
                         case EnumInstructions.jl:
@@ -248,7 +255,7 @@ namespace YAS
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
 
-                            someBytes = BitConverter.GetBytes(someProperty);
+                            someBytes = BitConverter.GetBytes((uint)someProperty);
                             WriteBytes(someBytes, filestream);
                             break;
                         case EnumInstructions.je:
@@ -260,7 +267,7 @@ namespace YAS
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
 
-                            someBytes = BitConverter.GetBytes(someProperty);
+                            someBytes = BitConverter.GetBytes((uint)someProperty);
                             WriteBytes(someBytes, filestream);
                             break;
                         case EnumInstructions.jne:
@@ -272,7 +279,7 @@ namespace YAS
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
 
-                            someBytes = BitConverter.GetBytes(someProperty);
+                            someBytes = BitConverter.GetBytes((uint)someProperty);
                             WriteBytes(someBytes, filestream);
                             break;
                         case EnumInstructions.jge:
@@ -284,7 +291,7 @@ namespace YAS
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
 
-                            someBytes = BitConverter.GetBytes(someProperty);
+                            someBytes = BitConverter.GetBytes((uint)someProperty);
                             WriteBytes(someBytes, filestream);
                             break;
                         case EnumInstructions.jg:
@@ -296,10 +303,11 @@ namespace YAS
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
 
-                            someBytes = BitConverter.GetBytes(someProperty);
+                            someBytes = BitConverter.GetBytes((uint)someProperty);
                             WriteBytes(someBytes, filestream);
                             break;
                         case EnumInstructions.call:
+                            //0x80<Dest>
                             if (currentTokenLine.Tokens.Length != 2)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in CALL instruction.");
 
@@ -308,7 +316,7 @@ namespace YAS
                             if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
                                 throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
 
-                            someBytes = BitConverter.GetBytes(someProperty);
+                            someBytes = BitConverter.GetBytes((uint)someProperty);
                             WriteBytes(someBytes, filestream);
                             break;
                         case EnumInstructions.ret:
@@ -319,6 +327,7 @@ namespace YAS
                             break;
                         case EnumInstructions.push:
                         case EnumInstructions.pop:
+                            throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Push/Pop instructions not implemented!");
                         default:
 #if DEBUG
 

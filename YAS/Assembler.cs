@@ -9,6 +9,10 @@ namespace YAS
     class Assembler
     {
 
+        /// <summary>
+        /// Assembles lines of assembly from the source file to the destination binary file.
+        /// </summary>
+        /// <returns></returns>
         public static bool AssembleFile(string sourceFilePath, string destFilePath)
         {
             Parser YParser = new Parser(EnumVerboseLevels.All);
@@ -44,10 +48,18 @@ namespace YAS
                     //Console.WriteLine("Parsing line: " + CurrentLine);
                     try
                     {
+                        //FIRST PASS
                         currentTokens = YParser.ParseString(CurrentLine);
                         if (currentTokens == null || currentTokens.Length == 0)
                             continue;
                         YFile.AddLine(currentTokens);
+
+
+                        //SECOND PASS
+                        Console.WriteLine("Second pass...");
+                        YFile.ResolveLabels();
+                        Console.WriteLine("Writing to file...");
+                        YFileWriter.WriteToFile(YFile, destFilePath);
                     }
                     catch (FoundUnexpectedToken e)
                     {
@@ -94,46 +106,6 @@ namespace YAS
                     {
                         Console.ResetColor();
                     }
-                }
-
-
-
-                try
-                {
-                    Console.WriteLine("Second pass...");
-                    YFile.ResolveLabels();
-                    Console.WriteLine("Writing to file...");
-                    YFileWriter.WriteToFile(YFile, destFilePath);
-                }
-                catch (AssemblerException e)
-                {
-                    BuildSuccessful = false;
-                    Console.WriteLine("ERROR at stage : " + Enum.GetName(typeof(EnumAssemblerStages), e._stage) + " " + e.Message);
-                }
-                catch (TokenAccessException e)
-                {
-                    BuildSuccessful = false;
-
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    if (e._Tkn != null)
-                    {
-                        Console.WriteLine("ERROR accessing token: " + e.Message);
-                        Console.WriteLine(e._Tkn.TokenInfoString());
-                    }
-                    else
-                    {
-                        Console.WriteLine("ERROR accessing token: " + e.Message);
-                    }
-                }
-                catch (Exception e)
-                {
-                    BuildSuccessful = false;
-
-                    Console.WriteLine(e.Message);
-                }
-                finally
-                {
-                    Console.ResetColor();
                 }
 
                 if (BuildSuccessful)
