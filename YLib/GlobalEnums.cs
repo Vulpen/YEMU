@@ -87,10 +87,10 @@ namespace YLib
         rcx,
         rdx,
         rbx,
-        rsp,
-        rbp,
         rsi,
         rdi,
+        rsp,
+        rbp,
         r8,
         r9,
         r10,
@@ -98,6 +98,45 @@ namespace YLib
         r12,
         r13,
         r14
+    }
+
+    public static class EnumHelper
+    {
+        public static EnumInstructions GetInstructions(byte icode, byte ifun)
+        {
+            switch(icode)
+            {
+                case 0:
+                    return EnumInstructions.halt;
+                case 1:
+                    return EnumInstructions.nop;
+                case 2:
+                    //Need FN for cmov's
+                    return EnumInstructions.rrmov;
+                case 3:
+                    return EnumInstructions.irmov;
+                case 4:
+                    return EnumInstructions.rmmov;
+                case 5:
+                    return EnumInstructions.mrmov;
+                case 6:
+                    //Need FN
+                    return EnumInstructions.add;
+                case 7:
+                    //Need FN
+                    return EnumInstructions.jmp;
+                case 8:
+                    return EnumInstructions.call;
+                case 9:
+                    return EnumInstructions.ret;
+                case 10:
+                    return EnumInstructions.push;
+                case 11:
+                    return EnumInstructions.pop;
+            }
+
+            return EnumInstructions.nop;
+        }
     }
 
 }

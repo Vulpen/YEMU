@@ -83,4 +83,18 @@ namespace YLib
         }
 
     }
+
+
+
+    public class MemoryAccessException : Exception
+    {
+        public MemoryAccessException() : base() { }
+        public MemoryAccessException(string msg) : base(msg) { } 
+    }
+
+    public class ROMException : Exception
+    {
+        public ROMException() : base() { }
+        public ROMException(string msg) : base(msg) { }
+    }
 }

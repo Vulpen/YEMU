@@ -16,7 +16,7 @@ namespace YAS
             //When made into a CLI, handle arguments here
 
             Assembler.AssembleFile(PATH, BIN_PATH);
-
+            
         }
     }
 }

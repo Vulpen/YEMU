@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Y86Emulator", "Y86Emulator.csproj", "{9C62A064-7BFB-41B7-9D2C-57AD4DA34C6A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Y86SEQEmulator", "Y86SEQEmulator\Y86SEQEmulator.csproj", "{1D302AE9-F8D5-48DE-BC24-C3BCFB132066}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9AD85799-CD79-48E6-86F4-B6E5F068C9C4} = {9AD85799-CD79-48E6-86F4-B6E5F068C9C4}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YAS", "YAS\YAS.csproj", "{5E2F47CA-A756-4DA5-8C38-2E8F89B6976A}"
 	ProjectSection(ProjectDependencies) = postProject
