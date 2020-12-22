@@ -1,5 +1,8 @@
 ﻿
 
+using System;
+using System.Collections.Generic;
+
 namespace YLib
 {
     public enum EnumVerboseLevels
@@ -100,6 +103,26 @@ namespace YLib
         r14
     }
 
+    public enum EnumConditionCodes
+    {
+        /// <summary>
+        /// Unsigned overflow
+        /// </summary>
+        CF,
+        /// <summary>
+        /// Zero Flag
+        /// </summary>
+        ZF,
+        /// <summary>
+        /// Negative Flag
+        /// </summary>
+        SF,
+        /// <summary>
+        /// Signed Overflow
+        /// </summary>
+        OF
+    }
+
     public static class EnumHelper
     {
         public static EnumInstructions GetInstructions(byte icode, byte ifun)
@@ -121,10 +144,38 @@ namespace YLib
                     return EnumInstructions.mrmov;
                 case 6:
                     //Need FN
-                    return EnumInstructions.add;
+                    switch(ifun)
+                    {
+                        default:
+                        case 0:
+                            return EnumInstructions.add;
+                        case 1:
+                            return EnumInstructions.sub;
+                        case 2:
+                            return EnumInstructions.and;
+                        case 3:
+                            return EnumInstructions.xor;
+                    }
                 case 7:
                     //Need FN
-                    return EnumInstructions.jmp;
+                    switch(ifun)
+                    {
+                        default:
+                        case 0:
+                            return EnumInstructions.jmp;
+                        case 1:
+                            return EnumInstructions.jle;
+                        case 2:
+                            return EnumInstructions.jl;
+                        case 3:
+                            return EnumInstructions.je;
+                        case 4:
+                            return EnumInstructions.jne;
+                        case 5:
+                            return EnumInstructions.jge;
+                        case 6:
+                            return EnumInstructions.jg;
+                    }
                 case 8:
                     return EnumInstructions.call;
                 case 9:

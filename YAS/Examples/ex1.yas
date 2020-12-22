@@ -1,7 +1,6 @@
 ﻿#Assignment #3
 #Thomas Lowe
 prob1a: #Thomas Lowe
- jmp prob1a
  irmovl $0x600110, %r9 #a
  irmovl $0x500064, %r10 #x
  irmovl $0x500990, %r11 #y

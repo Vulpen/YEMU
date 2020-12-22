@@ -92,6 +92,12 @@ namespace YLib
         public MemoryAccessException(string msg) : base(msg) { } 
     }
 
+    public class MemoryAccessWarning : Exception
+    {
+        public MemoryAccessWarning() : base() { }
+        public MemoryAccessWarning(string msg) : base(msg) { }
+    }
+
     public class ROMException : Exception
     {
         public ROMException() : base() { }

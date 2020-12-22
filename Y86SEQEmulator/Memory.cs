@@ -42,12 +42,26 @@ namespace Y86SEQEmulator
 
         public void WriteByte(UInt32 address, byte value)
         {
-            if(address > end_addr)
+            if(address > end_addr || address < start_addr)
             {
-                throw new MemberAccessException("Attempt to read memory outside of expected bounds.");
+                throw new MemberAccessException("Attempt to write memory outside of expected bounds.");
             }
 
             memory[address - start_addr] = value;
+        }
+
+        public void WriteLong(UInt32 address, UInt32 value)
+        {
+            if(address > end_addr || address < start_addr)
+            {
+                throw new MemberAccessException("Attempt to write memory outside of expected bounds.");
+            }
+            byte[] encoded = BitConverter.GetBytes(value);
+
+            for(int i = 0; i < 4; i++)
+            {
+                memory[address + i] = encoded[i];
+            }
         }
     }
 }
