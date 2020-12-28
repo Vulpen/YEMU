@@ -54,12 +54,6 @@ namespace YAS
                             continue;
                         YFile.AddLine(currentTokens);
 
-
-                        //SECOND PASS
-                        Console.WriteLine("Second pass...");
-                        YFile.ResolveLabels();
-                        Console.WriteLine("Writing to file...");
-                        YFileWriter.WriteToFile(YFile, destFilePath);
                     }
                     catch (FoundUnexpectedToken e)
                     {
@@ -106,6 +100,34 @@ namespace YAS
                     {
                         Console.ResetColor();
                     }
+                }
+
+                try
+                {
+                    //SECOND PASS
+                    Console.WriteLine("Second pass...");
+                    YFile.ResolveLabels();
+                    Console.WriteLine("Writing to file...");
+                    YFileWriter.WriteToFile(YFile, destFilePath);
+                }
+                catch (TokenAccessException e)
+                {
+                    BuildSuccessful = false;
+
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    if (e._Tkn != null)
+                    {
+                        Console.WriteLine("ERROR accessing token: " + e.Message);
+                        Console.WriteLine(e._Tkn.TokenInfoString());
+                    }
+                    else
+                    {
+                        Console.WriteLine("ERROR accessing token: " + e.Message);
+                    }
+                }
+                finally
+                {
+                    Console.ResetColor();
                 }
 
                 if (BuildSuccessful)

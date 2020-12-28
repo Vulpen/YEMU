@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using YLib;
 
 namespace Y86SEQEmulator
 {
@@ -17,14 +18,14 @@ namespace Y86SEQEmulator
             start_addr = 0x00001000;
             end_addr = start_addr + 255;
             ROMReader = new EmuReader();
-            ROMReader.OpenFile(@"D:\[KEEP]ProgrammingProjects\C#\Y86Emulator\YAS\Examples\ex1.yin");
+            ROMReader.OpenFile(@"D:\[KEEP]ProgrammingProjects\C#\Y86Emulator\YAS\Examples\jumpTest.yin");
         }
 
         public byte ReadByte(UInt32 address)
         {
             if( address > end_addr)
             {
-                throw new MemberAccessException("Attempt to read memory outside of expected bounds.");
+                throw new MemoryAccessException("Attempt to read memory outside of expected bounds.");
             }else if(address < start_addr)
             {
                 return ROMReader.ReadByteAtIndex(address);
@@ -32,10 +33,18 @@ namespace Y86SEQEmulator
 
             return memory[address - start_addr];
         }
-        //public UInt16 ReadWord(UInt32 address);
+        //public UInt16 ReadLord(UInt32 address);
         public UInt32 ReadLong(UInt32 address)
         {
-            return 0;
+            if(address + 4 > end_addr)
+            {
+                throw new MemoryAccessException("Attmpt to read memory outside of expected bounds.");
+            }else if(address + 4 < start_addr)
+            {
+                return ROMReader.ReadLongAtIndex(address);
+            }
+
+            return memory[address - start_addr];
         }
         //public UInt64 ReadQuad(UInt32 address);
 

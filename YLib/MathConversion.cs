@@ -42,6 +42,7 @@ namespace YLib
                 {
                     //Treat as Hex
                     Temp = Temp.Substring(2);
+                    Temp = Temp.PadLeft(4, '0');
                     Int64 number;
                     //MathConversion.ConvertHexToInt(Temp, out number);
                     if (Int64.TryParse(Temp, System.Globalization.NumberStyles.HexNumber, null, out number))

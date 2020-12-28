@@ -69,6 +69,7 @@ namespace YAS
             AddInstructionToken(tknList, "rrmovl", EnumInstructions.rrmov);
             AddInstructionToken(tknList, "mrmovl", EnumInstructions.mrmov);
             AddInstructionToken(tknList, "rmmovl", EnumInstructions.rmmov);
+            AddInstructionToken(tknList, "int", EnumInstructions.interrupt);
 
             //-----Registers
             AddRegisterToken(tknList, "%rax", EnumRegisters.rax);

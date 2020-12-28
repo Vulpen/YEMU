@@ -5,15 +5,20 @@ using YLib;
 
 namespace Y86SEQEmulator
 {
+    /// <summary>
+    /// Representation of a Sequential Y86 Processor.
+    /// </summary>
     class Processor
     {
+        public bool IsRunning { get; set; } = true;
+
         //Registers:
         UInt64[] registers;
         uint PC;
 
         byte icode, ifun, rA, rB;
-        uint valC, valP, valE, valM; // valC - Constant read in from Fetch. valP - PC guess. valE - result of Execute. valM - result of Memory.
-        uint valA, valB; // Values inside register A and register B
+        uint valC, valP, valM; // valC - Constant read in from Fetch. valP - PC guess. valE - result of Execute. valM - result of Memory.
+        Int32Union valA, valB, valE; // Values inside register A and register B
         EnumInstructions instruction;
         bool[] flags;
 
@@ -27,7 +32,7 @@ namespace Y86SEQEmulator
             registers = new UInt64[15];//Corresponds to the 15 registers of the 64-bit Y86 architecture
             MainMemory = new Memory();
             buffer = new byte[8];
-            flags = new bool[3];
+            flags = new bool[4];
             PC = 0;
         }
 
@@ -89,45 +94,85 @@ namespace Y86SEQEmulator
                 case EnumInstructions.jne:
                 case EnumInstructions.jge:
                 case EnumInstructions.jg:
+                case EnumInstructions.interrupt:
                     valP = 5;
                     valC = MainMemory.ReadLong(PC + 1);
                     break;
+                
             }
 
             //Decode
-            valA = (rB <= 14) ? (UInt32)registers[rA] : 0;
-            valB = (rB <= 14) ? (UInt32)registers[rB] : 0;
+            valA.unsigned = (rA <= 14) ? (UInt32)registers[rA] : 0;
+            valB.unsigned = (rB <= 14) ? (UInt32)registers[rB] : 0;
 
             //Execute
             switch(instruction)
             {
                 case EnumInstructions.add:
-                    valE = valB + valA;
-                    flags[(int)EnumConditionCodes.CF] = (valB > UInt32.MaxValue - valA) ? true : false;
+                    valE.unsigned = valB.unsigned + valA.unsigned;
+                    flags[(int)EnumConditionCodes.CF] = (valB.unsigned > UInt32.MaxValue - valA.unsigned) ? true : false;
+
+                    flags[(int)EnumConditionCodes.OF] = false;
+
+                    if (valA.signed > 0 && valB.signed > 0 && valE.signed < 0) {
+                        flags[(int)EnumConditionCodes.OF] = true;
+                        break;
+                    }
+
+                    if (valA.signed < 0 && valB.signed < 0 && valE.signed > 0)
+                    {
+                        flags[(int)EnumConditionCodes.OF] = true;
+                        break;
+                    }
+
+
+                    flags[(int)EnumConditionCodes.ZF] = (valE.unsigned == 0);
+                    flags[(int)EnumConditionCodes.SF] = (valE.signed < 0);
+
                     break;
                 case EnumInstructions.sub:
-                    valE = valB - valA;
-                    flags[(int)EnumConditionCodes.CF] = (valB < valA) ? true : false;
+                    valE.unsigned = valA.unsigned - valB.unsigned;
+                    flags[(int)EnumConditionCodes.CF] = (valA.unsigned < valB.unsigned) ? true : false;
+
+                    flags[(int)EnumConditionCodes.OF] = false;
+
+                    if (valB.signed < 0 && valA.signed > 0 && valE.signed < 0)
+                    {
+                        flags[(int)EnumConditionCodes.OF] = true;
+                        break;
+                    }
+
+                    if (valB.signed > 0 && valA.signed < 0 && valE.signed > 0)
+                    {
+                        flags[(int)EnumConditionCodes.OF] = true;
+                        break;
+                    }
+
+                    flags[(int)EnumConditionCodes.ZF] = (valE.unsigned == 0);
+                    flags[(int)EnumConditionCodes.SF] = (valE.signed < 0);
                     break;
                 case EnumInstructions.and:
-                    valE = valB & valA;
+                    valE.unsigned = valB.unsigned & valA.unsigned;
                     break;
                 case EnumInstructions.xor:
                     break;
                 case EnumInstructions.imul:
-                    valE = valB * valA;
+                    valE.unsigned = valB.unsigned * valA.unsigned;
                     break;
                 case EnumInstructions.irmov:
-                    valE = valC;
+                    valE.unsigned = valC;
                     break;
                 case EnumInstructions.rrmov:
                     valE = valA;
                     break;
                 case EnumInstructions.rmmov:
-                    valE = valB + valC;     //valE holds the address
+                    valE.unsigned = valB.unsigned + valC;     //valE holds the address
                     break;
                 case EnumInstructions.mrmov:
-                    valE = valA + valC;     //rA and rB reversed from example in book pg.389
+                    valE.unsigned = valA.unsigned + valC;     //rA and rB reversed from example in book pg.389
+                    break;
+                case EnumInstructions.interrupt:
+                    if (InterruptHandler.InterruptMapping.ContainsKey(valC)) { InterruptHandler.InterruptMapping[valC].Invoke(); }
                     break;
                 default:
                     break;
@@ -136,10 +181,10 @@ namespace Y86SEQEmulator
             //Memory
             if(instruction == EnumInstructions.rmmov)
             {
-                valM = MainMemory.ReadLong(valE);
+                valM = MainMemory.ReadLong(valE.unsigned);
             }else if(instruction == EnumInstructions.mrmov)
             {
-                MainMemory.WriteByte(valE, (byte)valA);
+                MainMemory.WriteByte(valE.unsigned, (byte)valA.unsigned);
             }
 
             //Write-Back
@@ -152,7 +197,7 @@ namespace Y86SEQEmulator
                 case EnumInstructions.imul:
                 case EnumInstructions.irmov:
                 case EnumInstructions.rrmov:
-                    registers[rB] = valE;
+                    registers[rB] = valE.unsigned;
                     break;
                 case EnumInstructions.mrmov:
                     registers[rB] = valM;   //rA and rB reversed from example in book pg.389
@@ -164,6 +209,30 @@ namespace Y86SEQEmulator
             {
                 case EnumInstructions.jmp:
                     PC = valC;
+                    break;
+                case EnumInstructions.jle:
+                    // (SF != OF) || ZF
+                    PC = ((flags[(int)EnumConditionCodes.SF] != flags[(int)EnumConditionCodes.OF]) || flags[(int)EnumConditionCodes.ZF]) ? valC : PC+valP;
+                    break;
+                case EnumInstructions.jl:
+                    // (SF != OF)
+                    PC = (flags[(int)EnumConditionCodes.SF] != flags[(int)EnumConditionCodes.OF]) ? valC : PC + valP;
+                    break;
+                case EnumInstructions.je:
+                    // ZF
+                    PC = (flags[(int)EnumConditionCodes.ZF]) ? valC : PC + valP;
+                    break;
+                case EnumInstructions.jne:
+                    // !ZF
+                    PC = (!flags[(int)EnumConditionCodes.ZF]) ? valC : PC + valP;
+                    break;
+                case EnumInstructions.jge:
+                    // !ZF && (SF = OF)
+                    PC = ((flags[(int)EnumConditionCodes.SF] == flags[(int)EnumConditionCodes.OF])) ? valC : PC + valP;
+                    break;
+                case EnumInstructions.jg:
+                    // !ZF && !SF
+                    PC = (!flags[(int)EnumConditionCodes.ZF] && !flags[(int)EnumConditionCodes.SF]) ? valC : PC + valP;
                     break;
                 default:
                     PC += valP;

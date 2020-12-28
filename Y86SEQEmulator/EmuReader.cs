@@ -50,8 +50,9 @@ namespace Y86SEQEmulator
 
             reader.BaseStream.Position = index;
             reader.Read(buffer, 0, 4);
+            Array.Reverse(buffer, 0, 4);        //Data is written big-endian, reverse to make little endian.
 
-            return BitConverter.ToUInt32(buffer, 0);
+            return BitConverter.ToUInt32(buffer,0);
         }
 
     }

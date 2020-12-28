@@ -325,6 +325,18 @@ namespace YAS
 
                             filestream.Write((byte)144);
                             break;
+                        case EnumInstructions.interrupt:
+                            if (currentTokenLine.Tokens.Length != 2)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Not enough tokens in Interrupt instruction.");
+
+                            filestream.Write((byte)240);
+
+                            if (!currentTokenLine.Tokens[1].GetProperty(EnumTokenProperties.ImmediateValue, out someProperty) || currentTokenLine.Tokens[1].TokenType != EnumTokenTypes.Immediate)
+                                throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Token is not expected immediate value.");
+
+                            someBytes = BitConverter.GetBytes((uint)someProperty);
+                            WriteBytes(someBytes, filestream);
+                            break;
                         case EnumInstructions.push:
                         case EnumInstructions.pop:
                             throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Push/Pop instructions not implemented!");

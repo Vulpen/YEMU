@@ -53,6 +53,7 @@ namespace YLib
             Sizes.Add(EnumInstructions.jge, 5);
             Sizes.Add(EnumInstructions.jg, 5);
             Sizes.Add(EnumInstructions.jl, 5);
+            Sizes.Add(EnumInstructions.interrupt, 5);
         }
 
         public int GetInstructionSize(EnumInstructions inst)
@@ -61,7 +62,7 @@ namespace YLib
             {
                 return Sizes[inst];
             }
-            throw new Exception("Tried to get an unsupported instruction size.");
+            throw new Exception("Tried to get an unsupported instruction size from sizes dictionary.");
         }
     }
 }

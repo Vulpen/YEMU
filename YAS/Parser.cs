@@ -73,15 +73,18 @@ namespace YAS
             //Lexer - Turn string into array of tokens
             if(!SimpleKeywordParse(line, ref ParsedTokens))
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Failed line on lexing |" + str);
                 return null;
             }
             //Parser - Finish populating array of tokens based on their context, and check if the array of tokens makes sense
             if (!ContextParse(ParsedTokens))
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Failed on parsing |" + str);
                 return null;
             }
+            Console.ResetColor();
             Console.WriteLine("Successfully parsed " + str);
 
             if (_verbosityLevel == EnumVerboseLevels.All)
@@ -204,6 +207,23 @@ namespace YAS
             return false;
         }
 
+        private bool CheckInterrupt(Token[] tkns)
+        {
+            if (tkns.Length != 2) return false;
+
+            EnumTokenTypes secondTokenType;
+            if(tkns[1].GetTokenType(out secondTokenType))
+            {
+                if(secondTokenType == EnumTokenTypes.Immediate)
+                {
+                    //Add a check to see if interrupt is valid.
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private bool CheckInstruction(Token[] tokens)
         {
             Token firstToken = tokens[0];
@@ -229,19 +249,16 @@ namespace YAS
                 case EnumInstructions.imul:
                 case EnumInstructions.xor:
                     return CheckArithmeticOperation(tokens);
-                    break;
                 case EnumInstructions.irmov:
                     return CheckMov(tokens, EnumTokenTypes.Immediate, EnumTokenTypes.Register);
-                    break;
                 case EnumInstructions.mrmov:
                     return CheckMov(tokens, EnumTokenTypes.AddressRegister, EnumTokenTypes.Register);
-                    break;
                 case EnumInstructions.rmmov:
                     return CheckMov(tokens, EnumTokenTypes.Register, EnumTokenTypes.AddressRegister);
-                    break;
                 case EnumInstructions.rrmov:
                     return CheckMov(tokens, EnumTokenTypes.Register, EnumTokenTypes.Register);
-                    break;
+                case EnumInstructions.interrupt:
+                    return CheckInterrupt(tokens);
                 case EnumInstructions.ret:
                 case EnumInstructions.halt:
                     break;

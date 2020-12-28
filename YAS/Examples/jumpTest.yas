@@ -1,0 +1,43 @@
+﻿test1:
+	irmovl $0x50, %r8
+	irmovl $0x50, %r9
+	subl %r8, %r9
+	je test2
+	jmp fail
+test2:
+	int $1
+	irmovl $0x51, %r8
+	irmovl $0x50, %r9
+	subl %r8, %r9
+	jg test3
+	jmp fail
+test3:
+	int $1
+	irmovl $0x50, %r8
+	irmovl $0x50, %r9
+	subl %r8, %r9
+	jge test4
+	jmp fail
+test4:
+	int $1
+	irmovl $0x50, %r8
+	irmovl $0x50, %r9
+	subl %r8, %r9
+	jle test5
+	jmp fail
+test5:
+	int $1
+	irmovl $0x50, %r8
+	irmovl $0x51, %r9
+	subl %r8, %r9
+	jl test6
+	jmp fail
+test6:
+success:
+	int $1
+	jmp end
+fail:
+	int $0
+	jmp end
+end:
+	jmp end

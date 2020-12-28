@@ -77,7 +77,8 @@ namespace YLib
         call,
         ret,
         push,
-        pop
+        pop,
+        interrupt
     }
 
 
@@ -108,7 +109,7 @@ namespace YLib
         /// <summary>
         /// Unsigned overflow
         /// </summary>
-        CF,
+        CF = 0,
         /// <summary>
         /// Zero Flag
         /// </summary>
@@ -184,6 +185,8 @@ namespace YLib
                     return EnumInstructions.push;
                 case 11:
                     return EnumInstructions.pop;
+                case 15:
+                    return EnumInstructions.interrupt;
             }
 
             return EnumInstructions.nop;
