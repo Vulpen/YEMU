@@ -7,16 +7,18 @@ namespace YAS
 {
     class Program
     {
-        //static string PATH = @"E:\[]ProgrammingProjects\C#\YEMU\YAS\Examples\ex1.yas";
-        static string PATH = @"D:\[KEEP]ProgrammingProjects\C#\Y86Emulator\YAS\Examples\drawPixel.yas";
-        static string BIN_PATH = @"D:\[KEEP]ProgrammingProjects\C#\Y86Emulator\YAS\Examples\drawPixel.yin";
-        //static string BIN_PATH = @"E:\[]ProgrammingProjects\C#\YEMU\YAS\Examples\ex1.yin";
-        static void Main(string[] args)
+        private const string _path = @"./Examples/drawPixel.yas";
+        private const string _binPath = @"./Examples/drawPixel.yin";
+
+        /// <summary>
+        /// Calls assemble file, will handle arguments in the future.
+        /// </summary>
+        /// <param name="args"></param>
+        private static void Main(string[] args)
         {
             //When made into a CLI, handle arguments here
-            Assembler Y86Assembler = new Assembler();
-            Y86Assembler.AssembleFile(PATH, BIN_PATH);
-            return;
+            var Y86Assembler = new Assembler();
+            Y86Assembler.AssembleFile(_path, _binPath);
         }
     }
 }

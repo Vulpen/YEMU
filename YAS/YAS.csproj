@@ -9,4 +9,13 @@
     <ProjectReference Include="..\YLib\YLib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Examples\drawPixel.yas">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Examples\drawPixel.yin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -24,18 +24,20 @@ namespace YAS
         /// Driver of all necessary private functions and splits string into a list of strings.
         /// </summary>
         /// <returns></returns>
-        public Token[] ParseString(string str)
+        public Token[] ParseString(string str, out bool success)
         {
             //Trim string----
             str = str.Trim();
             string[] line = str.Split(' ');
             if(line.Length < 1)
             {
+                success = false;
                 return null;
             }
 
             if(line == null || line.Length == 0)
             {
+                success = false;
                 return null;
             }
             //End trim------
@@ -49,6 +51,7 @@ namespace YAS
                     if(i == 0)
                     {
                         Console.WriteLine("Ignored: " + str);
+                        success = false;
                         return null;
                     }
                     else
@@ -65,9 +68,7 @@ namespace YAS
                 }
                 line[i] = line[i].TrimEnd(',');
             }
-            //
-
-
+            
             Token[] ParsedTokens = new Token[line.Length];
 
             //Lexer - Turn string into array of tokens
@@ -75,6 +76,7 @@ namespace YAS
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Failed line on lexing |" + str);
+                success = false;
                 return null;
             }
             //Parser - Finish populating array of tokens based on their context, and check if the array of tokens makes sense
@@ -82,6 +84,7 @@ namespace YAS
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Failed on parsing |" + str);
+                success = false;
                 return null;
             }
             Console.ResetColor();
@@ -94,6 +97,8 @@ namespace YAS
                     Console.Write(ParsedTokens[i].TokenInfoString());
                 }
             }
+            Console.WriteLine("Yup, everything is good here");
+            success = true;
             return ParsedTokens;
         }
 
@@ -147,7 +152,6 @@ namespace YAS
                     }
 
                     tokens[i] = new Token((int)EnumTokenTypes.Unkown, units[i]);
-                    continue;
                 }
             }
             return true;

@@ -16,30 +16,31 @@ namespace YAS
         /// <summary>
         /// Compiles lines of assembly from the source file into binary at the destfile.
         /// </summary>
+        /// <param name="sourceFilePath"></param>
+        /// <param name="destFilePath"></param>
         /// <returns></returns>
-        public bool AssembleFile(string sourceFilePath, string destFilePath)
+        public void AssembleFile(string sourceFilePath, string destFilePath)
         {
-            bool BuildSuccessful = true;
+            var firstPassSuccess = false;
+            var secondPassSuccess = false;
 
             if (!File.Exists(sourceFilePath))
             {
-                Console.WriteLine("Could not find source file at  " + sourceFilePath);
-                return false;
+                Console.WriteLine($"Could not find source file at {sourceFilePath}");
+                return;
             }
 
-            BuildSuccessful = Preprocessor();
-
-            using (StreamReader readStream = new StreamReader(sourceFilePath))
+            using (var readStream = new StreamReader(sourceFilePath))
             {
-                BuildSuccessful = FirstPass(readStream);
+                FirstPass(readStream, out firstPassSuccess);
             }
 
-            using (BinaryWriter binaryStream = new BinaryWriter(File.Open(destFilePath, FileMode.OpenOrCreate)))
+            using (var binaryStream = new BinaryWriter(File.Open(destFilePath, FileMode.OpenOrCreate)))
             {
-                BuildSuccessful = SecondPass(binaryStream);
+                SecondPass(binaryStream, out secondPassSuccess);
             }
 
-            if (BuildSuccessful)
+            if (firstPassSuccess && secondPassSuccess)
             {
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine(destFilePath + " successfully built");
@@ -51,8 +52,6 @@ namespace YAS
                 Console.WriteLine("FAILED building: " + destFilePath);
                 Console.ResetColor();
             }
-
-            return BuildSuccessful;
         }
 
         private bool Preprocessor() { return true; }
@@ -60,55 +59,50 @@ namespace YAS
         /// <summary>
         /// Lexing aka Tokenizing and parsing the assembly.
         /// </summary>
-        private bool FirstPass(StreamReader readStream) 
+        private void FirstPass(StreamReader readStream, out bool success) 
         {
-            bool BuildSuccessful = true;
-            int LineNumber = 0;
-            string CurrentLine;
+            var lineNumber = 0;
+            var currentLine = "";
             Token[] currentTokens;
             Console.WriteLine("Lexical analysis and parsing...");
+            
             while (!readStream.EndOfStream)
             {
-                CurrentLine = String.Empty;
-                CurrentLine = readStream.ReadLine();
-                CurrentLine.Trim();
-                LineNumber += 1;
+                success = false;
+                currentLine = readStream.ReadLine();
+                currentLine = currentLine.Trim();
+                lineNumber += 1;
 
-                if (CurrentLine == String.Empty)
-                    continue;
-
+                if(string.IsNullOrEmpty(currentLine)) continue;
+                
                 try
                 {
-                    //FIRST PASS
-                    currentTokens = YParser.ParseString(CurrentLine);
-                    if (currentTokens == null || currentTokens.Length == 0)
-                        continue;
+                    currentTokens = YParser.ParseString(currentLine, out success);
+                    if (currentTokens?.Length == 0) continue;
                     YFile.AddLine(currentTokens);
-
+                    return;
                 }
                 catch (FoundUnexpectedToken e)
                 {
-                    //Console.WriteLine("ERROR : Unexpected Token " + e.token1.Text + " On Line : " + LineNumber + "|" + CurrentLine);
                     if (e.token1 != null)
                     {
-                        Console.WriteLine($"ERROR : Unexpected Token {e.token1.Text} On Line : {LineNumber} | {CurrentLine}");
+                        Console.WriteLine($"ERROR : Unexpected Token {e.token1.Text} On Line : {lineNumber} | {currentLine = ""}");
                     }
                     else
                     {
-                        Console.WriteLine($"ERROR : Unexpected Token On Line : {LineNumber} | {CurrentLine}");
+                        Console.WriteLine($"ERROR : Unexpected Token On Line : {lineNumber} | {currentLine = ""}");
                     }
                 }
                 catch (AssemblerException e)
                 {
-
+                    success = false;
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("ERROR at stage : " + Enum.GetName(typeof(EnumAssemblerStages), e._stage) + " " + e.Message);
-                    BuildSuccessful = false;
+                    return;
                 }
                 catch (TokenAccessException e)
                 {
-                    BuildSuccessful = false;
-
+                    success = false;
                     Console.ForegroundColor = ConsoleColor.Red;
                     if (e._Tkn != null)
                     {
@@ -119,21 +113,21 @@ namespace YAS
                     {
                         Console.WriteLine("ERROR accessing token: " + e.Message);
                     }
+                    return;
                 }
                 catch (Exception e)
                 {
-                    BuildSuccessful = false;
-
+                    success = false;
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine(e.Message);
+                    return;
                 }
                 finally
                 {
                     Console.ResetColor();
                 }
             }
-
-            return BuildSuccessful;
+            success = true;
         }
 
         /// <summary>
@@ -141,9 +135,8 @@ namespace YAS
         /// </summary>
         /// <param name="destFilePath"></param>
         /// <returns></returns>
-        private bool SecondPass(BinaryWriter binaryStream) 
+        private void SecondPass(BinaryWriter binaryStream, out bool success) 
         {
-            bool BuildSuccessful = true;
             try
             {
                 //SECOND PASS
@@ -154,8 +147,7 @@ namespace YAS
             }
             catch (TokenAccessException e)
             {
-                BuildSuccessful = false;
-
+                success = false;
                 Console.ForegroundColor = ConsoleColor.Red;
                 if (e._Tkn != null)
                 {
@@ -166,13 +158,21 @@ namespace YAS
                 {
                     Console.WriteLine("ERROR accessing token: " + e.Message);
                 }
+
+                return;
+            }
+            catch (FoundUnexpectedToken e)
+            {
+                success = false;
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(e.Message);
             }
             finally
             {
                 Console.ResetColor();
             }
 
-            return BuildSuccessful;
+            success = true;
         }
 
         private void InitializeAssembler()
