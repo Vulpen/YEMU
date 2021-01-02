@@ -37,7 +37,8 @@ namespace YLib
         Utility,
         Parser,
         TokenFile,
-        BinaryWriter
+        BinaryWriter,
+        Preprocessor
     }
 
     public class AssemblerException : Exception

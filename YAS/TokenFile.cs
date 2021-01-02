@@ -56,7 +56,7 @@ namespace YAS
     }
 
     /// <summary>
-    /// A representation of our file in arrays of tokens.
+    /// A representation of source assembly broken into lines of tokens.
     /// </summary>
     class TokenFile
     {

@@ -8,8 +8,13 @@ namespace Y86SEQEmulator
     /// <summary>
     /// Representation of a Sequential Y86 Processor.
     /// </summary>
-    class Processor
+    public class Processor
     {
+        // Properties -----
+        public UInt64 R8 { get { return (registers[8]); } }
+        public UInt64 R9 { get { return (registers[9]); } }
+        public UInt64 R10 { get { return (registers[10]); } }
+
         public bool IsRunning { get; set; } = true;
 
         //Registers:
@@ -172,7 +177,7 @@ namespace Y86SEQEmulator
                     valE.unsigned = valA.unsigned + valC;     //rA and rB reversed from example in book pg.389
                     break;
                 case EnumInstructions.interrupt:
-                    if (InterruptHandler.InterruptMapping.ContainsKey(valC)) { InterruptHandler.InterruptMapping[valC].Invoke(); }
+                    if (InterruptHandler.InterruptMapping.ContainsKey(valC)) { InterruptHandler.InterruptMapping[valC].Invoke(this); }
                     break;
                 default:
                     break;

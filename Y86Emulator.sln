@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Y86Emulator", "Y86Emulator.csproj", "{9C62A064-7BFB-41B7-9D2C-57AD4DA34C6A}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Y86SEQEmulator", "Y86SEQEmulator\Y86SEQEmulator.csproj", "{1D302AE9-F8D5-48DE-BC24-C3BCFB132066}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9AD85799-CD79-48E6-86F4-B6E5F068C9C4} = {9AD85799-CD79-48E6-86F4-B6E5F068C9C4}
@@ -17,16 +15,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YAS", "YAS\YAS.csproj", "{5
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YLib", "YLib\YLib.csproj", "{9AD85799-CD79-48E6-86F4-B6E5F068C9C4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SEQRenderer", "SEQRenderer\SEQRenderer.csproj", "{B5411AF6-9F36-4E09-AEFD-9B3CC0411CAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9C62A064-7BFB-41B7-9D2C-57AD4DA34C6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9C62A064-7BFB-41B7-9D2C-57AD4DA34C6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9C62A064-7BFB-41B7-9D2C-57AD4DA34C6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9C62A064-7BFB-41B7-9D2C-57AD4DA34C6A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1D302AE9-F8D5-48DE-BC24-C3BCFB132066}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1D302AE9-F8D5-48DE-BC24-C3BCFB132066}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D302AE9-F8D5-48DE-BC24-C3BCFB132066}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +35,10 @@ Global
 		{9AD85799-CD79-48E6-86F4-B6E5F068C9C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AD85799-CD79-48E6-86F4-B6E5F068C9C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9AD85799-CD79-48E6-86F4-B6E5F068C9C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5411AF6-9F36-4E09-AEFD-9B3CC0411CAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5411AF6-9F36-4E09-AEFD-9B3CC0411CAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5411AF6-9F36-4E09-AEFD-9B3CC0411CAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5411AF6-9F36-4E09-AEFD-9B3CC0411CAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
