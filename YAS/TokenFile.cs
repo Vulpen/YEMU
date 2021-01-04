@@ -6,7 +6,7 @@ using YLib;
 namespace YAS
 {
 
-    
+
 
     class TokenLine
     {
@@ -16,9 +16,9 @@ namespace YAS
 
         public bool ContainsLabel()
         {
-            if(Tokens != null)
+            if (Tokens != null)
             {
-                for(int i = 0; i < Tokens.Length; i++)
+                for (int i = 0; i < Tokens.Length; i++)
                 {
                     EnumTokenTypes temp;
                     Tokens[i].GetTokenType(out temp);
@@ -53,7 +53,20 @@ namespace YAS
             }
             return -1;
         }
+
+        public int ReturnUnknownIndex()
+        {
+            if (Tokens == null) return -1;
+            for(int i = 0; i < Tokens.Length; i++)
+            {
+                EnumTokenTypes temp;
+                Tokens[i].GetTokenType(out temp);
+            }
+
+            return -1;
+        }
     }
+
 
     /// <summary>
     /// A representation of source assembly broken into lines of tokens.

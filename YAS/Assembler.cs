@@ -19,7 +19,9 @@ namespace YAS
         /// <returns></returns>
         public bool AssembleFile(string sourceFilePath, string destFilePath)
         {
-            bool BuildSuccessful = true;
+            bool PreprocessorSuccessful = true;
+            bool FirstPassSuccessful = true;
+            bool SecondPassSuccessful = true;
 
             if (!File.Exists(sourceFilePath))
             {
@@ -27,19 +29,19 @@ namespace YAS
                 return false;
             }
 
-            BuildSuccessful = Preprocessor();
+            PreprocessorSuccessful = Preprocessor();
 
             using (StreamReader readStream = new StreamReader(sourceFilePath))
             {
-                BuildSuccessful = FirstPass(readStream);
+                FirstPassSuccessful = FirstPass(readStream);
             }
 
             using (BinaryWriter binaryStream = new BinaryWriter(File.Open(destFilePath, FileMode.OpenOrCreate)))
             {
-                BuildSuccessful = SecondPass(binaryStream);
+                SecondPassSuccessful = SecondPass(binaryStream);
             }
 
-            if (BuildSuccessful)
+            if (PreprocessorSuccessful && FirstPassSuccessful && SecondPassSuccessful)
             {
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine(destFilePath + " successfully built");
@@ -52,7 +54,7 @@ namespace YAS
                 Console.ResetColor();
             }
 
-            return BuildSuccessful;
+            return PreprocessorSuccessful && FirstPassSuccessful && SecondPassSuccessful;
         }
 
         private bool Preprocessor() { return true; }
@@ -97,6 +99,7 @@ namespace YAS
                     {
                         Console.WriteLine($"ERROR : Unexpected Token On Line : {LineNumber} | {CurrentLine}");
                     }
+                    BuildSuccessful = false;
                 }
                 catch (AssemblerException e)
                 {
@@ -165,6 +168,22 @@ namespace YAS
                 else
                 {
                     Console.WriteLine("ERROR accessing token: " + e.Message);
+                }
+            }
+            catch (FoundUnexpectedToken e)
+            {
+                BuildSuccessful = false;
+
+                Console.ForegroundColor = ConsoleColor.Red;
+
+                if(e.token1 != null)
+                {
+                    Console.WriteLine($"Found unexpected token: {e.Message}");
+                    Console.WriteLine(e.token1.TokenInfoString());
+                }
+                else
+                {
+                    Console.WriteLine($"Found unexpected token: {e.Message}");
                 }
             }
             finally
