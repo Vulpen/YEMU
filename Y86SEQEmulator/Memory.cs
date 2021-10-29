@@ -18,7 +18,7 @@ namespace Y86SEQEmulator
             start_addr = 0x00001000;
             end_addr = start_addr + 255;
             ROMReader = new EmuReader();
-            ROMReader.OpenFile(@"D:\[KEEP]ProgrammingProjects\C#\Y86Emulator\YAS\Examples\drawPixel.yin");
+            ROMReader.OpenFile(@"D:\[KEEP]ProgrammingProjects\C#\Y86Emulator\YLib\Examples\drawPixel.yin");
         }
 
         public Memory(string RomFilePath)
