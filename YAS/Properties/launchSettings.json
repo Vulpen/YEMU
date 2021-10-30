@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "YAS": {
+      "commandName": "Project",
+      "commandLineArgs": "-i $(SolutionDir)YLib\\Examples\\jumpTest.yas -o $(SolutionDir)YLib\\Examples\\jumpTest.yin"
+    }
+  }
+}

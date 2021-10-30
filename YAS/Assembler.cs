@@ -23,12 +23,6 @@ namespace YAS
             bool FirstPassSuccessful = true;
             bool SecondPassSuccessful = true;
 
-            if (!File.Exists(sourceFilePath))
-            {
-                Console.WriteLine("Could not find source file at  " + sourceFilePath);
-                return false;
-            }
-
             PreprocessorSuccessful = Preprocessor();
 
             using (StreamReader readStream = new StreamReader(sourceFilePath))
