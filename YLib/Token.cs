@@ -15,11 +15,45 @@ namespace YLib
         public EnumTokenTypes TokenType
         {
             //TODO Lets do something!
-            get {
+            get
+            {
                 EnumTokenTypes var;
                 if (GetTokenType(out var))
                     return var;
                 return EnumTokenTypes.Unkown;
+            }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+            else
+            {
+                Token other = (Token)obj;
+                bool doesMatch = true;
+                foreach (var key in this.Properties.Keys)
+                {
+                    if (!other.Properties.ContainsKey(key))
+                    {
+                        doesMatch = false;
+                        break;
+                    }
+                    else
+                    {
+                        if (other.Properties[key] != this.Properties[key])
+                        {
+                            doesMatch = false;
+                            break;
+                        }
+                    }
+                }
+
+                // Need to add a test that other does not have any keys that are in this object.
+
+                return doesMatch && this.Text == other.Text;
             }
         }
 
@@ -55,13 +89,13 @@ namespace YLib
             AddProperty(EnumTokenProperties.RealInstruction, RealInstructionVal);
         }
 
-        public Token(Int64 TokenTypeVal, Int64 RealInstructionVal, int InstructionSize, string str)
+        public Token(Int64 TokenTypeVal, Int64 RealInstructionVal, Int64 InstructionSize, string str)
         {
             Properties = new Dictionary<EnumTokenProperties, long>();
             _text = str;
             AddProperty(EnumTokenProperties.TokenType, TokenTypeVal);
             AddProperty(EnumTokenProperties.RealInstruction, RealInstructionVal);
-            AddProperty(EnumTokenProperties.OpSizeBytes, (Int64)InstructionSize);
+            AddProperty(EnumTokenProperties.InstructionSize, (Int64)InstructionSize);
         }
 
         public string Text
@@ -149,7 +183,7 @@ namespace YLib
         public string TokenInfoString()
         {
             string returnString = "";
-            foreach(var val in Properties)
+            foreach (var val in Properties)
             {
                 switch (val.Key)
                 {
