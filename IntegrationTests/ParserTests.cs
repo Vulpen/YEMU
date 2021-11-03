@@ -42,8 +42,23 @@ namespace IntegrationTests
             expectedtokens.Add(immediateToken);
             Token[] actualTokens = testParser.ParseString("int $3");
 
-            //Assert.AreEqual(expectedtokens.ToArray(), actualTokens);
-            Assert.AreEqual(expectedtokens.ToArray()[1], actualTokens[1]);
+            foreach (Token tkn in expectedtokens)
+            {
+                Assert.IsTrue(Array.IndexOf(actualTokens, tkn) > -1);
+            }
+        }
+
+        [TestMethod]
+        public void TestLabelDeclaration()
+        {
+            Parser testParser = new Parser(EnumVerboseLevels.All);
+
+            List<Token> expectedtokens = new List<Token>();
+            expectedtokens.Add(new Token((Int64)EnumTokenTypes.Label, "myLabel:"));
+
+            Token[] actualTokens = testParser.ParseString("myLabel:");
+
+            Assert.AreEqual(expectedtokens[0], actualTokens[0]);
         }
     }
 }

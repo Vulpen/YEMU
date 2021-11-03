@@ -286,7 +286,6 @@ namespace YAS
                     return CheckInstruction(tokens_in);
                     break;
                 case (EnumTokenTypes.Label):
-                    //Handle label table
                     return true;
                     break;
                 default:
