@@ -1,1 +1,1 @@
-mrmovq (%r10), %rcx
+mrmovl (%r10), %rcx

@@ -14,7 +14,7 @@ namespace IntegrationTests
     public class ParserTests
     {
         [TestMethod]
-        public void TestEmptyLine()
+        public void EmptyLine()
         {
             Parser testParser = new Parser(EnumVerboseLevels.All);
             Token[] actualTokens = testParser.ParseString("");
@@ -23,7 +23,7 @@ namespace IntegrationTests
         }
 
         [TestMethod]
-        public void TestSpacesLine()
+        public void SpacesLine()
         {
             Parser testParser = new Parser(EnumVerboseLevels.All);
             Token[] actualTokens = testParser.ParseString("         ");
@@ -32,7 +32,7 @@ namespace IntegrationTests
         }
 
         [TestMethod]
-        public void TestInterrupt()
+        public void Interrupt()
         {
             Parser testParser = new Parser(EnumVerboseLevels.All);
             List<Token> expectedtokens = new List<Token>();
@@ -49,7 +49,7 @@ namespace IntegrationTests
         }
 
         [TestMethod]
-        public void TestLabelDeclaration()
+        public void LabelDeclaration()
         {
             Parser testParser = new Parser(EnumVerboseLevels.All);
 
