@@ -9,7 +9,7 @@ namespace YAS
     /// <summary>
     /// Handles parsing and 'lexing' an input string into a series of tokens.
     /// </summary>
-    class Parser
+    public class Parser
     {
         private Keywords YKeywords;
         private EnumVerboseLevels _verbosityLevel;
@@ -21,7 +21,7 @@ namespace YAS
         }
 
         /// <summary>
-        /// Driver of all necessary private functions and splits string into a list of strings.
+        /// Driver of all necessary private functions and splits string into a list of tokens.
         /// </summary>
         /// <returns></returns>
         public Token[] ParseString(string str)
@@ -29,24 +29,25 @@ namespace YAS
             //Trim string----
             str = str.Trim();
             string[] line = str.Split(' ');
-            if(line.Length < 1)
+
+            if (line.Length == 1 && line[0] == String.Empty)
             {
-                return null;
+                return new Token[] { };
             }
 
-            if(line == null || line.Length == 0)
+            if (line == null || line.Length == 0)
             {
-                return null;
+                return new Token[] { };
             }
             //End trim------
 
 
             //Check if should be ignored: comments, etc.
-            for(int i = 0; i < line.Length; i++)
+            for (int i = 0; i < line.Length; i++)
             {
-                if(line[i].StartsWith("//") || line[i].StartsWith("#"))
+                if (line[i].StartsWith("//") || line[i].StartsWith("#"))
                 {
-                    if(i == 0)
+                    if (i == 0)
                     {
                         Console.WriteLine("Ignored: " + str);
                         return null;
@@ -55,7 +56,7 @@ namespace YAS
                     {
                         //Allows putting comments on the same line as instructions
                         string[] replace = new string[i];
-                        for(int j = 0; j < i; j++)
+                        for (int j = 0; j < i; j++)
                         {
                             replace[j] = line[j];
                         }
@@ -71,7 +72,7 @@ namespace YAS
             Token[] ParsedTokens = new Token[line.Length];
 
             //Lexer - Turn string into array of tokens
-            if(!SimpleKeywordParse(line, ref ParsedTokens))
+            if (!SimpleKeywordParse(line, ref ParsedTokens))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Failed line on lexing |" + str);
@@ -104,10 +105,11 @@ namespace YAS
         private bool SimpleKeywordParse(string[] units, ref Token[] tokens)
         {
             tokens = new Token[units.Length];
-            for(int i = 0; i < units.Length; i++)
+            for (int i = 0; i < units.Length; i++)
             {
                 Token temp = null;
-                if (YKeywords.IsKeyword(units[i], ref temp)){
+                if (YKeywords.IsKeyword(units[i], ref temp))
+                {
                     //First, check if the string is an existing keyword.
                     //If not, it will be a label, immediate, or an address register with offset
                     tokens[i] = temp;
@@ -130,7 +132,7 @@ namespace YAS
                         {
                             //Address register with offset, error if no immediate!
                             int j = units[i].IndexOf("(");
-                            ImmediateVal = MathConversion.ParseImmediate(units[i].Substring(0, j-1));
+                            ImmediateVal = MathConversion.ParseImmediate(units[i].Substring(0, j - 1));
                             units[i] = units[i].Substring(j);
                             if (YKeywords.IsKeyword(units[i], ref temp))
                             {
@@ -161,7 +163,7 @@ namespace YAS
                 EnumTokenTypes token2Type;
                 if (tkns[1].GetTokenType(out token1Type) && tkns[2].GetTokenType(out token2Type))
                 {
-                    if(token1Type == EnumTokenTypes.Immediate)
+                    if (token1Type == EnumTokenTypes.Immediate)
                     {
                         throw new FoundUnexpectedToken("Illegal immediate used in arithmetic operation");
                     }
@@ -176,7 +178,7 @@ namespace YAS
 
         private bool CheckJMP(Token[] tkns)
         {
-            if(tkns.Length == 2)
+            if (tkns.Length == 2)
             {
                 EnumTokenTypes token1Type;
                 if (tkns[1].GetTokenType(out token1Type))
@@ -212,9 +214,9 @@ namespace YAS
             if (tkns.Length != 2) return false;
 
             EnumTokenTypes secondTokenType;
-            if(tkns[1].GetTokenType(out secondTokenType))
+            if (tkns[1].GetTokenType(out secondTokenType))
             {
-                if(secondTokenType == EnumTokenTypes.Immediate)
+                if (secondTokenType == EnumTokenTypes.Immediate)
                 {
                     //Add a check to see if interrupt is valid.
                     return true;
@@ -228,7 +230,7 @@ namespace YAS
         {
             Token firstToken = tokens[0];
             EnumInstructions CurrentTokenInstruction;
-            if(!firstToken.GetInstruction(out CurrentTokenInstruction))
+            if (!firstToken.GetInstruction(out CurrentTokenInstruction))
             {
                 return false;
             }
@@ -274,7 +276,7 @@ namespace YAS
         {
             Token firstToken = tokens_in[0];
             EnumTokenTypes CurrentTokenType;
-            if(!firstToken.GetTokenType(out CurrentTokenType))
+            if (!firstToken.GetTokenType(out CurrentTokenType))
             {
                 return false;
             }
@@ -284,7 +286,6 @@ namespace YAS
                     return CheckInstruction(tokens_in);
                     break;
                 case (EnumTokenTypes.Label):
-                    //Handle label table
                     return true;
                     break;
                 default:

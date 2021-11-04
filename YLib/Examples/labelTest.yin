@@ -1,0 +1,5 @@
+﻿// This file is to test labels that are declared before and after usage of the label
+label1:
+jmp label1
+jmp label2
+label2:
