@@ -60,5 +60,16 @@ namespace IntegrationTests
 
             Assert.AreEqual(expectedtokens[0], actualTokens[0]);
         }
+
+        [TestMethod]
+        [TestCategory("Invalid Token")]
+        public void InvalidArithmetic()
+        {
+            Parser testParser = new Parser(EnumVerboseLevels.All);
+            
+
+            List<Token> expectedtokens = new List<Token>();
+            expectedtokens.Add(new Token((Int64)EnumTokenTypes.Label, "myLabel:"));
+        }
     }
 }

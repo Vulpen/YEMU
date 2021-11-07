@@ -28,8 +28,8 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="xcopy /s /Y &quot;$(ProjectDir)Examples\*.yin&quot; &quot;${SolutionDir}IntegrationTests\bin\Debug\netcoreapp3.1\*.yin&quot;" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy  /E /Y /I &quot;$(ProjectDir)Examples&quot; &quot;$(SolutionDir)IntegrationTests\bin\Debug\netcoreapp3.1\Examples\&quot;&#xD;&#xA;echo &quot;$(ProjectDir)Examples&quot; &#xD;&#xA;echo &quot;$(SolutionDir)IntegrationTests\bin\Debug\netcoreapp3.1\Examples\&quot;" />
   </Target>
 
 </Project>

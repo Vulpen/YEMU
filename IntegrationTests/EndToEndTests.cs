@@ -49,5 +49,15 @@ namespace IntegrationTests
 
             Assert.IsTrue(myAssembler.AssembleFile(workingDirectory + @"\Examples\drawPixel.yas", workingDirectory + @"\Examples\drawPixel.yin"));
         }
+
+        [TestMethod]
+        public void LabelTest()
+        {
+            Assembler myAssembler = new Assembler();
+            string workingDirectory = Directory.GetCurrentDirectory();
+            Console.WriteLine(workingDirectory);
+
+            Assert.IsTrue(myAssembler.AssembleFile(workingDirectory + @"\Examples\labelTest.yas", workingDirectory + @"\Examples\labelTest.yin"));
+        }
     }
 }

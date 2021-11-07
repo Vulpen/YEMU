@@ -292,6 +292,8 @@ namespace YAS
                 case (EnumTokenTypes.Immediate):
                 case (EnumTokenTypes.Register):
                 case (EnumTokenTypes.Unkown):
+                    // If the first token is not recognized, it is invalid.
+                    // If it's a label, it should have been recognized by now.
                     throw new FoundUnexpectedToken(firstToken.DeepCopy());
                     return false;
                     break;
