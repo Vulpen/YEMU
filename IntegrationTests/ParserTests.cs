@@ -60,5 +60,25 @@ namespace IntegrationTests
 
             Assert.AreEqual(expectedtokens[0], actualTokens[0]);
         }
+
+        [TestMethod]
+        [TestCategory("Invalid Token")]
+        public void InvalidArithmetic()
+        {
+            Parser testParser = new Parser(EnumVerboseLevels.All);
+
+
+            List<Token> expectedtokens = new List<Token>();
+            expectedtokens.Add(new Token((Int64)EnumTokenTypes.Instruction, (Int64)EnumInstructions.add, "addl"));
+            Token immediateToken = new Token((Int64)EnumTokenTypes.Immediate, "$0");
+            immediateToken.AddProperty(EnumTokenProperties.ImmediateValue, 0);
+            expectedtokens.Add(immediateToken);
+            immediateToken = new Token((Int64)EnumTokenTypes.Immediate, "$1");
+            immediateToken.AddProperty(EnumTokenProperties.ImmediateValue, 1);
+            expectedtokens.Add(immediateToken);
+
+            Token[] actualTokens = { };
+            Assert.ThrowsException<FoundUnexpectedToken>(() => { actualTokens = testParser.ParseString("addl $0, $1"); });
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace YAS
     /// A Registry of Keyword tokens in the Y86 language.
     /// Each Token contains it's type (instruction, register, addressregister)
     /// </summary>
-    class Keywords
+    public class Keywords
     {
         private List<Token> keys;
 
@@ -142,6 +142,23 @@ namespace YAS
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Intended for debugging purposes only.
+        /// </summary>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        public Token GetTokenByKey(string val)
+        {
+            for (int i = 0; i < keys.Count; i++)
+            {
+                if (keys[i].Text == val)
+                {
+                    return keys[i].DeepCopy();
+                }
+            }
+            throw new TokenAccessException();
         }
     }
 }

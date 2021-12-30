@@ -18,22 +18,75 @@ namespace YAS
         public bool AssembleFile(string sourceFilePath, string destFilePath)
         {
             bool PreprocessorSuccessful = true;
-            bool FirstPassSuccessful = true;
-            bool SecondPassSuccessful = true;
+            bool ParsingSuccessful = true;
 
             PreprocessorSuccessful = Preprocessor();
-
-            using (StreamReader readStream = new StreamReader(sourceFilePath))
+            try
             {
-                FirstPassSuccessful = FirstPass(readStream);
+                using (StreamReader readStream = new StreamReader(sourceFilePath))
+                {
+                    FirstPass(readStream);
+                }
+
+                using (BinaryWriter binaryStream = new BinaryWriter(File.Open(destFilePath, FileMode.OpenOrCreate)))
+                {
+                    SecondPass(binaryStream);
+                }
+            }
+            catch (TokenAccessException e)
+            {
+
+                Console.ForegroundColor = ConsoleColor.Red;
+                if (e._Tkn != null)
+                {
+                    Console.WriteLine("ERROR accessing token: " + e.Message);
+                    Console.WriteLine(e._Tkn.TokenInfoString());
+                }
+                else
+                {
+                    Console.WriteLine("ERROR accessing token: " + e.Message);
+                }
+
+                ParsingSuccessful = false;
+            }
+            catch (FoundUnexpectedToken e)
+            {
+
+                Console.ForegroundColor = ConsoleColor.Red;
+
+                if (e.token1 != null)
+                {
+                    Console.WriteLine($"Found unexpected token: {e.Message}");
+                    Console.WriteLine(e.token1.TokenInfoString());
+                }
+                else
+                {
+                    Console.WriteLine($"Found unexpected token: {e.Message}");
+                }
+
+                ParsingSuccessful = false;
+            }
+            catch (AssemblerException e)
+            {
+
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR at stage : " + Enum.GetName(typeof(EnumAssemblerStages), e._stage) + " " + e.Message);
+
+                ParsingSuccessful = false;
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine(e.Message);
+
+                ParsingSuccessful = false;
+            }
+            finally
+            {
+                Console.ResetColor();
             }
 
-            using (BinaryWriter binaryStream = new BinaryWriter(File.Open(destFilePath, FileMode.OpenOrCreate)))
-            {
-                SecondPassSuccessful = SecondPass(binaryStream);
-            }
-
-            if (PreprocessorSuccessful && FirstPassSuccessful && SecondPassSuccessful)
+            if (PreprocessorSuccessful && ParsingSuccessful)
             {
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine(destFilePath + " successfully built");
@@ -46,7 +99,7 @@ namespace YAS
                 Console.ResetColor();
             }
 
-            return PreprocessorSuccessful && FirstPassSuccessful && SecondPassSuccessful;
+            return PreprocessorSuccessful && ParsingSuccessful;
         }
 
         private bool Preprocessor() { return true; }
@@ -54,9 +107,8 @@ namespace YAS
         /// <summary>
         /// Lexing aka Tokenizing and parsing the assembly.
         /// </summary>
-        private bool FirstPass(StreamReader readStream) 
+        private void FirstPass(StreamReader readStream)
         {
-            bool BuildSuccessful = true;
             int LineNumber = 0;
             string CurrentLine;
             Token[] currentTokens;
@@ -71,64 +123,13 @@ namespace YAS
                 if (CurrentLine == String.Empty)
                     continue;
 
-                try
-                {
-                    //FIRST PASS
-                    currentTokens = YParser.ParseString(CurrentLine);
-                    if (currentTokens == null || currentTokens.Length == 0)
-                        continue;
-                    YFile.AddLine(currentTokens);
+                //FIRST PASS
+                currentTokens = YParser.ParseString(CurrentLine);
+                if (currentTokens == null || currentTokens.Length == 0)
+                    continue;
+                YFile.AddLine(currentTokens);
 
-                }
-                catch (FoundUnexpectedToken e)
-                {
-                    //Console.WriteLine("ERROR : Unexpected Token " + e.token1.Text + " On Line : " + LineNumber + "|" + CurrentLine);
-                    if (e.token1 != null)
-                    {
-                        Console.WriteLine($"ERROR : Unexpected Token {e.token1.Text} On Line : {LineNumber} | {CurrentLine}");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"ERROR : Unexpected Token On Line : {LineNumber} | {CurrentLine}");
-                    }
-                    BuildSuccessful = false;
-                }
-                catch (AssemblerException e)
-                {
-
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("ERROR at stage : " + Enum.GetName(typeof(EnumAssemblerStages), e._stage) + " " + e.Message);
-                    BuildSuccessful = false;
-                }
-                catch (TokenAccessException e)
-                {
-                    BuildSuccessful = false;
-
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    if (e._Tkn != null)
-                    {
-                        Console.WriteLine("ERROR accessing token: " + e.Message);
-                        Console.WriteLine(e._Tkn.TokenInfoString());
-                    }
-                    else
-                    {
-                        Console.WriteLine("ERROR accessing token: " + e.Message);
-                    }
-                }
-                catch (Exception e)
-                {
-                    BuildSuccessful = false;
-
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine(e.Message);
-                }
-                finally
-                {
-                    Console.ResetColor();
-                }
             }
-
-            return BuildSuccessful;
         }
 
         /// <summary>
@@ -136,54 +137,13 @@ namespace YAS
         /// </summary>
         /// <param name="destFilePath"></param>
         /// <returns></returns>
-        private bool SecondPass(BinaryWriter binaryStream) 
+        private void SecondPass(BinaryWriter binaryStream)
         {
-            bool BuildSuccessful = true;
-            try
-            {
-                //SECOND PASS
-                Console.WriteLine("Second pass...");
-                YFile.ResolveLabels();
-                Console.WriteLine("Writing to file...");
-                YFileWriter.WriteToFile(YFile, binaryStream);
-            }
-            catch (TokenAccessException e)
-            {
-                BuildSuccessful = false;
-
-                Console.ForegroundColor = ConsoleColor.Red;
-                if (e._Tkn != null)
-                {
-                    Console.WriteLine("ERROR accessing token: " + e.Message);
-                    Console.WriteLine(e._Tkn.TokenInfoString());
-                }
-                else
-                {
-                    Console.WriteLine("ERROR accessing token: " + e.Message);
-                }
-            }
-            catch (FoundUnexpectedToken e)
-            {
-                BuildSuccessful = false;
-
-                Console.ForegroundColor = ConsoleColor.Red;
-
-                if(e.token1 != null)
-                {
-                    Console.WriteLine($"Found unexpected token: {e.Message}");
-                    Console.WriteLine(e.token1.TokenInfoString());
-                }
-                else
-                {
-                    Console.WriteLine($"Found unexpected token: {e.Message}");
-                }
-            }
-            finally
-            {
-                Console.ResetColor();
-            }
-
-            return BuildSuccessful;
+            //SECOND PASS
+            Console.WriteLine("Second pass...");
+            YFile.ResolveLabels();
+            Console.WriteLine("Writing to file...");
+            YFileWriter.WriteToFile(YFile, binaryStream);
         }
 
         private void InitializeAssembler()
