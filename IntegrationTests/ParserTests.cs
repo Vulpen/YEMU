@@ -19,7 +19,7 @@ namespace IntegrationTests
             Parser testParser = new Parser(EnumVerboseLevels.All);
             Token[] actualTokens = testParser.ParseString("");
 
-            Assert.IsTrue(actualTokens.Length == 0);
+            Assert.IsTrue(actualTokens == null);
         }
 
         [TestMethod]
@@ -28,7 +28,7 @@ namespace IntegrationTests
             Parser testParser = new Parser(EnumVerboseLevels.All);
             Token[] actualTokens = testParser.ParseString("         ");
 
-            Assert.IsTrue(actualTokens.Length == 0);
+            Assert.IsTrue(actualTokens == null);
         }
 
         [TestMethod]
@@ -87,7 +87,7 @@ namespace IntegrationTests
 
             Token[] actualTokens = { };
             actualTokens = testParser.ParseString("# addl Please don't compile me, I'm a comment!");
-            Assert.IsTrue(actualTokens.Length == 0);
+            Assert.IsTrue(actualTokens == null);
         }
     }
 }
