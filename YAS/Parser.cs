@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using YLib;
 
 namespace YAS
@@ -26,48 +27,15 @@ namespace YAS
         /// <returns></returns>
         public Token[] ParseString(string str)
         {
-            //Trim string----
             str = str.Trim();
+            str = FilterCommentsFromLine(str);
+            str = FilterCommasFromLine(str);
             string[] line = str.Split(' ');
 
-            if (line.Length == 1 && line[0] == String.Empty)
+            if (IsStringArrayBlank(line))
             {
-                return new Token[] { };
+                return null;
             }
-
-            if (line == null || line.Length == 0)
-            {
-                return new Token[] { };
-            }
-            //End trim------
-
-
-            //Check if should be ignored: comments, etc.
-            for (int i = 0; i < line.Length; i++)
-            {
-                if (line[i].StartsWith("//") || line[i].StartsWith("#"))
-                {
-                    if (i == 0)
-                    {
-                        Console.WriteLine("Ignored: " + str);
-                        return null;
-                    }
-                    else
-                    {
-                        //Allows putting comments on the same line as instructions
-                        string[] replace = new string[i];
-                        for (int j = 0; j < i; j++)
-                        {
-                            replace[j] = line[j];
-                        }
-                        line = replace;
-                        break;
-                    }
-                }
-                line[i] = line[i].TrimEnd(',');
-            }
-            //
-
 
             Token[] ParsedTokens = new Token[line.Length];
 
@@ -266,6 +234,30 @@ namespace YAS
                     break;
             }
             return false;
+        }
+
+        private string FilterCommentsFromLine(string line)
+        {
+            string ret = line;
+            if (line.Contains("#")) {
+                Console.WriteLine("Ignoring comment on" + line);
+                ret = line.Substring(line.LastIndexOf("#"));
+            }
+            if (line.Contains("//")) {
+                Console.WriteLine("Ignoring comment on" + line);
+                ret = line.Substring(line.LastIndexOf("//"));
+            }
+            return ret;
+        }
+
+        private string FilterCommasFromLine(string line)
+        {
+            return Regex.Replace(line, @"[,]", "");
+        }
+
+        private bool IsStringArrayBlank(string[] arr)
+        {
+            return (arr.Length == 1 && arr[0] == String.Empty) || arr.Length == 0;
         }
 
         /// <summary>
