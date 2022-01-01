@@ -19,7 +19,7 @@ namespace IntegrationTests
             Parser testParser = new Parser(EnumVerboseLevels.All);
             Token[] actualTokens = testParser.ParseString("");
 
-            Assert.IsTrue(actualTokens.Length == 0);
+            Assert.IsTrue(actualTokens == null);
         }
 
         [TestMethod]
@@ -28,7 +28,7 @@ namespace IntegrationTests
             Parser testParser = new Parser(EnumVerboseLevels.All);
             Token[] actualTokens = testParser.ParseString("         ");
 
-            Assert.IsTrue(actualTokens.Length == 0);
+            Assert.IsTrue(actualTokens == null);
         }
 
         [TestMethod]
@@ -67,7 +67,6 @@ namespace IntegrationTests
         {
             Parser testParser = new Parser(EnumVerboseLevels.All);
 
-
             List<Token> expectedtokens = new List<Token>();
             expectedtokens.Add(new Token((Int64)EnumTokenTypes.Instruction, (Int64)EnumInstructions.add, "addl"));
             Token immediateToken = new Token((Int64)EnumTokenTypes.Immediate, "$0");
@@ -79,6 +78,16 @@ namespace IntegrationTests
 
             Token[] actualTokens = { };
             Assert.ThrowsException<FoundUnexpectedToken>(() => { actualTokens = testParser.ParseString("addl $0, $1"); });
+        }
+
+        [TestMethod]
+        public void FullCommentLine()
+        {
+            Parser testParser = new Parser(EnumVerboseLevels.All);
+
+            Token[] actualTokens = { };
+            actualTokens = testParser.ParseString("# addl Please don't compile me, I'm a comment!");
+            Assert.IsTrue(actualTokens == null);
         }
     }
 }

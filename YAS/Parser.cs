@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using YLib;
 
 namespace YAS
@@ -26,48 +27,15 @@ namespace YAS
         /// <returns></returns>
         public Token[] ParseString(string str)
         {
-            //Trim string----
             str = str.Trim();
+            str = FilterCommentsFromLine(str);
+            str = FilterCommasFromLine(str);
             string[] line = str.Split(' ');
 
-            if (line.Length == 1 && line[0] == String.Empty)
+            if (IsStringArrayBlank(line))
             {
-                return new Token[] { };
+                return null;
             }
-
-            if (line == null || line.Length == 0)
-            {
-                return new Token[] { };
-            }
-            //End trim------
-
-
-            //Check if should be ignored: comments, etc.
-            for (int i = 0; i < line.Length; i++)
-            {
-                if (line[i].StartsWith("//") || line[i].StartsWith("#"))
-                {
-                    if (i == 0)
-                    {
-                        Console.WriteLine("Ignored: " + str);
-                        return null;
-                    }
-                    else
-                    {
-                        //Allows putting comments on the same line as instructions
-                        string[] replace = new string[i];
-                        for (int j = 0; j < i; j++)
-                        {
-                            replace[j] = line[j];
-                        }
-                        line = replace;
-                        break;
-                    }
-                }
-                line[i] = line[i].TrimEnd(',');
-            }
-            //
-
 
             Token[] ParsedTokens = new Token[line.Length];
 
@@ -107,50 +75,7 @@ namespace YAS
             tokens = new Token[units.Length];
             for (int i = 0; i < units.Length; i++)
             {
-                Token temp = null;
-                if (YKeywords.IsKeyword(units[i], ref temp))
-                {
-                    //First, check if the string is an existing keyword.
-                    //If not, it will be a label, immediate, or an address register with offset
-                    tokens[i] = temp;
-                }
-                else
-                {
-                    //The first instruction can also be a label
-                    if (units[i].EndsWith(':'))
-                    {
-                        //label
-                        tokens[i] = new Token((int)EnumTokenTypes.Label, units[i]);
-                        continue;
-                    }
-
-                    if (units[i].StartsWith('$'))
-                    {
-                        //Can be an immediate, or an address register with offset
-                        Int64 ImmediateVal = 0;
-                        if (units[i].Contains("("))
-                        {
-                            //Address register with offset, error if no immediate!
-                            int j = units[i].IndexOf("(");
-                            ImmediateVal = MathConversion.ParseImmediate(units[i].Substring(0, j - 1));
-                            units[i] = units[i].Substring(j);
-                            if (YKeywords.IsKeyword(units[i], ref temp))
-                            {
-                                temp.AddProperty(EnumTokenProperties.ImmediateValue, ImmediateVal); //ImmediateValue holds the offset!
-                                tokens[i] = temp;
-                                continue;
-                            }
-                        }
-
-                        ImmediateVal = MathConversion.ParseImmediate(units[i]);
-                        tokens[i] = new Token((int)EnumTokenTypes.Immediate, units[i]);
-                        tokens[i].AddProperty(EnumTokenProperties.ImmediateValue, ImmediateVal);
-                        continue;
-                    }
-
-                    tokens[i] = new Token((int)EnumTokenTypes.Unkown, units[i]);
-                    continue;
-                }
+                tokens[i] = TokenizeWord(units[i]);
             }
             return true;
         }
@@ -174,6 +99,52 @@ namespace YAS
                 }
             }
             return false;
+        }
+
+        // TODO: Change this to get rid of early returns.
+        private Token TokenizeWord(string line)
+        {
+            Token temp = null;
+            if (YKeywords.IsKeyword(line, ref temp))
+            {
+                //First, check if the string is an existing keyword.
+                //If not, it will be a label, immediate, or an address register with offset
+                return temp;
+            }
+            else
+            {
+                //The first instruction can also be a label
+                if (line.EndsWith(':'))
+                {
+                    //label
+                    return new Token((int)EnumTokenTypes.Label, line);
+                }
+
+                if (line.StartsWith('$'))
+                {
+                    //Can be an immediate, or an address register with offset
+                    Int64 ImmediateVal = 0;
+                    if (line.Contains("("))
+                    {
+                        //Address register with offset, error if no immediate!
+                        int j = line.IndexOf("(");
+                        ImmediateVal = MathConversion.ParseImmediate(line.Substring(0, j - 1));
+                        line = line.Substring(j);
+                        if (YKeywords.IsKeyword(line, ref temp))
+                        {
+                            temp.AddProperty(EnumTokenProperties.ImmediateValue, ImmediateVal); //ImmediateValue holds the offset!
+                            return temp;
+                        }
+                    }
+
+                    ImmediateVal = MathConversion.ParseImmediate(line);
+                    temp = new Token((int)EnumTokenTypes.Immediate, line);
+                    temp.AddProperty(EnumTokenProperties.ImmediateValue, ImmediateVal);
+                    return temp;
+                }
+
+                return new Token((int)EnumTokenTypes.Unkown, line);
+            }
         }
 
         private bool CheckJMP(Token[] tkns)
@@ -266,6 +237,32 @@ namespace YAS
                     break;
             }
             return false;
+        }
+
+        private string FilterCommentsFromLine(string line)
+        {
+            string ret = line;
+            if (line.Contains("#"))
+            {
+                Console.WriteLine("Ignoring comment on" + line);
+                ret = line.Substring(line.LastIndexOf("#"));
+            }
+            if (line.Contains("//"))
+            {
+                Console.WriteLine("Ignoring comment on" + line);
+                ret = line.Substring(line.LastIndexOf("//"));
+            }
+            return ret;
+        }
+
+        private string FilterCommasFromLine(string line)
+        {
+            return Regex.Replace(line, @"[,]", "");
+        }
+
+        private bool IsStringArrayBlank(string[] arr)
+        {
+            return (arr.Length == 1 && arr[0] == String.Empty) || arr.Length == 0;
         }
 
         /// <summary>
