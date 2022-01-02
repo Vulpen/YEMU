@@ -19,11 +19,31 @@ namespace YAS
             GenerateTokens(ref keys);
         }
 
+        // TODO: Not sure why I picked this design of taking in the tokens list to these functions.
+
         public void AddInstructionToken(List<Token> tokens, string str, EnumInstructions instructionEnum, EnumInstructionSizes instructionSize = EnumInstructionSizes.Long)
         {
             Token tkn = new Token(str);
             tkn.AddProperty(EnumTokenProperties.TokenType, (Int64)EnumTokenTypes.Instruction);
             tkn.AddProperty(EnumTokenProperties.RealInstruction, (Int64)instructionEnum);
+            tkn.AddProperty(EnumTokenProperties.InstructionSize, (Int64)instructionSize);
+            tokens.Add(tkn);
+        }
+
+        public void AddBeginMacroToken(List<Token> tokens, EnumInstructionSizes instructionSize)
+        {
+            // TODO : Add a check that the macros
+            Token tkn = new Token("BEGIN_MACRO");
+            tkn.AddProperty(EnumTokenProperties.TokenType, (Int64)EnumTokenTypes.MacroBegin);
+            tkn.AddProperty(EnumTokenProperties.InstructionSize, (Int64)instructionSize);
+            tokens.Add(tkn);
+        }
+
+        public void AddEndMacroToken(List<Token> tokens, EnumInstructionSizes instructionSize)
+        {
+            // TODO : Add a check that the macros
+            Token tkn = new Token("END_MACRO");
+            tkn.AddProperty(EnumTokenProperties.TokenType, (Int64)EnumTokenTypes.MacroEnd);
             tkn.AddProperty(EnumTokenProperties.InstructionSize, (Int64)instructionSize);
             tokens.Add(tkn);
         }
@@ -113,6 +133,10 @@ namespace YAS
             AddAssemblerDirectiveToken(tknList, ".word", EnumAssemblerDirectives.Word);
             AddAssemblerDirectiveToken(tknList, ".long", EnumAssemblerDirectives.Long);
             AddAssemblerDirectiveToken(tknList, ".quad", EnumAssemblerDirectives.Quad);
+
+            //-----Macro Directives
+            AddAssemblerDirectiveToken(tknList, ".bmacro", EnumAssemblerDirectives.BeginMacro);
+            AddAssemblerDirectiveToken(tknList, ".emacro", EnumAssemblerDirectives.EndMacro);
         }
 
         /// <summary>

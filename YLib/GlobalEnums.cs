@@ -20,7 +20,8 @@ namespace YLib
         Immediate,
         Label,
         Unkown,
-        AssemblerDirective
+        AssemblerDirective,
+        Macro
     }
 
     public enum EnumTokenProperties
@@ -42,7 +43,9 @@ namespace YLib
         Byte,       // 1 Byte
         Word,       // 2 Bytes
         Long,       // 4 Bytes
-        Quad        // 8 Bytes
+        Quad,       // 8 Bytes
+        BeginMacro,
+        EndMacro
     }
 
     public enum EnumInstructionSizes

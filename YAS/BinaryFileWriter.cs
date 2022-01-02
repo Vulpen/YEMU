@@ -11,11 +11,6 @@ namespace YAS
     /// </summary>
     class BinaryFileWriter
     {
-        public BinaryFileWriter()
-        {
-
-        }
-
         /// <summary>
         /// Writes a given TokenFile to a binary file.
         /// </summary>
@@ -23,12 +18,12 @@ namespace YAS
         {
             //TODO Create Wrapper functions for movs, jmps, etc.
 
-            for(int line = 0; line < tokenFile.NumberOfLines; line++)
+            for (int line = 0; line < tokenFile.NumberOfLines; line++)
             {
                 TokenLine currentTokenLine = tokenFile.GetLine(line);
                 Token firstToken = currentTokenLine.Tokens[0];
                 EnumInstructions first_instruction;
-                if(!firstToken.GetInstruction(out first_instruction))
+                if (!firstToken.GetInstruction(out first_instruction))
                 {
                     return;
                 }
@@ -340,31 +335,21 @@ namespace YAS
                     case EnumInstructions.pop:
                         throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "Push/Pop instructions not implemented!");
                     default:
-#if DEBUG
-
-#else
                         throw new AssemblerException(EnumAssemblerStages.BinaryWriter, "File writer does not support this instruction yet.");
-#endif
                         break;
                 }
 
-                
+
             }
         }
 
         private void WriteBytes(byte[] bytes, BinaryWriter bw)
         {
-            for(int i = bytes.Length - 1; i >= 0 ; i--)
+            for (int i = bytes.Length - 1; i >= 0; i--)
             {
                 //Add file access exception
                 bw.Write(bytes[i]);
             }
-        }
-
-
-        ~BinaryFileWriter()
-        {
-            
         }
     }
 }

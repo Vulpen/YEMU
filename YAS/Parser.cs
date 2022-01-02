@@ -109,7 +109,6 @@ namespace YAS
             {
                 //First, check if the string is an existing keyword.
                 //If not, it will be a label, immediate, or an address register with offset
-                return temp;
             }
             else
             {
@@ -117,7 +116,7 @@ namespace YAS
                 if (line.EndsWith(':'))
                 {
                     //label
-                    return new Token((int)EnumTokenTypes.Label, line);
+                    temp = new Token((int)EnumTokenTypes.Label, line);
                 }
 
                 if (line.StartsWith('$'))
@@ -133,18 +132,16 @@ namespace YAS
                         if (YKeywords.IsKeyword(line, ref temp))
                         {
                             temp.AddProperty(EnumTokenProperties.ImmediateValue, ImmediateVal); //ImmediateValue holds the offset!
-                            return temp;
                         }
                     }
 
                     ImmediateVal = MathConversion.ParseImmediate(line);
                     temp = new Token((int)EnumTokenTypes.Immediate, line);
                     temp.AddProperty(EnumTokenProperties.ImmediateValue, ImmediateVal);
-                    return temp;
                 }
-
-                return new Token((int)EnumTokenTypes.Unkown, line);
+                temp = new Token((int)EnumTokenTypes.Unkown, line);
             }
+            return temp;
         }
 
         private bool CheckJMP(Token[] tkns)
@@ -195,6 +192,39 @@ namespace YAS
             }
 
             return false;
+        }
+
+        private bool CheckAssemblerDirective(Token[] tokens)
+        {
+            int directiveVal;
+            tokens[0].GetProperty(EnumTokenProperties.AssemblerDirective, out directiveVal);
+            switch(directiveVal)
+            {
+                case (int)EnumAssemblerDirectives.BeginMacro:
+                    if(tokens.Length == 2 && tokens[1].TokenType == EnumTokenTypes.Unkown)
+                    {
+                        // Push Begin Macro of Token[0]
+                    } else
+                    {
+                        throw new FoundUnexpectedToken("Error Declaring Macro");
+                        return false;
+                    }
+                    return false;
+                case (int)EnumAssemblerDirectives.EndMacro:
+                    if (tokens.Length == 2 && tokens[1].TokenType == EnumTokenTypes.Unkown)
+                    {
+                        // Pop Macro from Stack, check if token strings match
+                    }
+                    else
+                    {
+                        // Add a specific exception throw for macros defined in non-stacked order
+                        throw new FoundUnexpectedToken("Error Closing Macro");
+                        return false;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
         }
 
         private bool CheckInstruction(Token[] tokens)
@@ -279,12 +309,12 @@ namespace YAS
             }
             switch (CurrentTokenType)
             {
+                case (EnumTokenTypes.AssemblerDirective):
+                    return CheckAssemblerDirective(tokens_in);
                 case (EnumTokenTypes.Instruction):
                     return CheckInstruction(tokens_in);
-                    break;
                 case (EnumTokenTypes.Label):
                     return true;
-                    break;
                 default:
                 case (EnumTokenTypes.Immediate):
                 case (EnumTokenTypes.Register):
@@ -292,7 +322,6 @@ namespace YAS
                     // If the first token is not recognized, it is invalid.
                     // If it's a label, it should have been marked as a label by now, even if it isn't resolved.
                     return false;
-                    break;
             }
             return false;
         }
