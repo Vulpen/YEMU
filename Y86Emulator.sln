@@ -17,10 +17,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YLib", "YLib\YLib.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SEQRenderer", "SEQRenderer\SEQRenderer.csproj", "{B5411AF6-9F36-4E09-AEFD-9B3CC0411CAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{35EFE749-7663-4468-876F-3C0F814B8A89}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{35EFE749-7663-4468-876F-3C0F814B8A89}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9AD85799-CD79-48E6-86F4-B6E5F068C9C4} = {9AD85799-CD79-48E6-86F4-B6E5F068C9C4}
 		{5E2F47CA-A756-4DA5-8C38-2E8F89B6976A} = {5E2F47CA-A756-4DA5-8C38-2E8F89B6976A}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2736E403-B738-43A2-A330-C4879C803E69}"
+	ProjectSection(SolutionItems) = preProject
+		docs.md = docs.md
 	EndProjectSection
 EndProject
 Global
