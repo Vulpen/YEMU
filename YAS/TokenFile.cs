@@ -137,6 +137,10 @@ namespace YAS
             throw new Exception("Tried to add empty line to token file");
         }
 
+        /// <summary>
+        /// This discovers and replaces references to labels.
+        /// </summary>
+        /// <returns></returns>
         public bool ResolveLabels()
         {
             //Resolves labels on the Token File.
