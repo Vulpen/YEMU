@@ -4,6 +4,9 @@ using YLib;
 
 namespace YAS
 {
+    /// <summary>
+    /// Given a source and destination file, this class converts string of Y86 assembly to machine language.
+    /// </summary>
     public class Assembler
     {
         public Assembler()

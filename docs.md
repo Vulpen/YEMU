@@ -7,6 +7,21 @@
 `Y86SEQEmulator` is a simple emulator based on the `Sequental` machine from the book.
 `SEQRenderer` is a machine which is able to render pixels with MonoGame.
 
+## YLib
+
+Core library for this project. Contains the basic definitions of `Tokens` and general language constructs.
+
+
+## YAS
+
+### Assembler
+Reads in a Y86 file and fully converts to machine language.
+`FirstPass()` - Function which performs lexical analysis and parsing
+`SecondPass()` - Performs token resolution
+
+### Keywords
+
+Contains definitions of key words within the Y86 language.
 
 
 
