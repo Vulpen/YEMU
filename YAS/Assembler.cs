@@ -128,7 +128,6 @@ namespace YAS
                 if (currentTokens == null || currentTokens.Length == 0)
                     continue;
                 YFile.AddLine(currentTokens);
-
             }
         }
 

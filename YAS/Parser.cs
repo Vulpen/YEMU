@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using YLib;
 
 namespace YAS
@@ -29,7 +30,7 @@ namespace YAS
             str = CleanSourceLine(str);
             string[] line = SplitSourceLine(str);
 
-            if (line.Length == 1 && line[0] == String.Empty)
+            if (IsStringArrayBlank(line))
             {
                 return new Token[] { };
             }
@@ -159,7 +160,6 @@ namespace YAS
                     }
                 }
             }
-            return false;
         }
 
         private bool CheckJMP(Token[] tkns)
@@ -252,6 +252,32 @@ namespace YAS
                     break;
             }
             return false;
+        }
+
+        private string FilterCommentsFromLine(string line)
+        {
+            string ret = line;
+            if (line.Contains("#"))
+            {
+                Console.WriteLine("Ignoring comment on" + line);
+                ret = line.Substring(line.LastIndexOf("#"));
+            }
+            if (line.Contains("//"))
+            {
+                Console.WriteLine("Ignoring comment on" + line);
+                ret = line.Substring(line.LastIndexOf("//"));
+            }
+            return ret;
+        }
+
+        private string FilterCommasFromLine(string line)
+        {
+            return Regex.Replace(line, @"[,]", "");
+        }
+
+        private bool IsStringArrayBlank(string[] arr)
+        {
+            return (arr.Length == 1 && arr[0] == String.Empty) || arr.Length == 0;
         }
 
         /// <summary>
