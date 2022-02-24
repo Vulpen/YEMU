@@ -160,6 +160,7 @@ namespace YAS
                     }
                 }
             }
+            return false;
         }
 
         private bool CheckJMP(Token[] tkns)
