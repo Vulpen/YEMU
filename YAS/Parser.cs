@@ -26,49 +26,18 @@ namespace YAS
         /// <returns></returns>
         public Token[] ParseString(string str)
         {
-            //Trim string----
-            str = str.Trim();
-            string[] line = str.Split(' ');
+            str = CleanSourceLine(str);
+            string[] line = SplitSourceLine(str);
 
             if (line.Length == 1 && line[0] == String.Empty)
             {
                 return new Token[] { };
             }
 
-            if (line == null || line.Length == 0)
+            if (line == null || line.Length == 0 || str == String.Empty)
             {
                 return new Token[] { };
             }
-            //End trim------
-
-
-            //Check if should be ignored: comments, etc.
-            for (int i = 0; i < line.Length; i++)
-            {
-                if (line[i].StartsWith("//") || line[i].StartsWith("#"))
-                {
-                    if (i == 0)
-                    {
-                        Console.WriteLine("Ignored: " + str);
-                        return null;
-                    }
-                    else
-                    {
-                        //Allows putting comments on the same line as instructions
-                        string[] replace = new string[i];
-                        for (int j = 0; j < i; j++)
-                        {
-                            replace[j] = line[j];
-                        }
-                        line = replace;
-                        break;
-                    }
-                }
-                line[i] = line[i].TrimEnd(',');
-            }
-            //
-
-
             Token[] ParsedTokens = new Token[line.Length];
 
             //Lexer - Turn string into array of tokens
@@ -107,52 +76,69 @@ namespace YAS
             tokens = new Token[units.Length];
             for (int i = 0; i < units.Length; i++)
             {
-                Token temp = null;
-                if (YKeywords.IsKeyword(units[i], ref temp))
-                {
-                    //First, check if the string is an existing keyword.
-                    //If not, it will be a label, immediate, or an address register with offset
-                    tokens[i] = temp;
-                }
-                else
-                {
-                    //The first instruction can also be a label
-                    if (units[i].EndsWith(':'))
-                    {
-                        //label
-                        tokens[i] = new Token((int)EnumTokenTypes.Label, units[i]);
-                        continue;
-                    }
-
-                    if (units[i].StartsWith('$'))
-                    {
-                        //Can be an immediate, or an address register with offset
-                        Int64 ImmediateVal = 0;
-                        if (units[i].Contains("("))
-                        {
-                            //Address register with offset, error if no immediate!
-                            int j = units[i].IndexOf("(");
-                            ImmediateVal = MathConversion.ParseImmediate(units[i].Substring(0, j - 1));
-                            units[i] = units[i].Substring(j);
-                            if (YKeywords.IsKeyword(units[i], ref temp))
-                            {
-                                temp.AddProperty(EnumTokenProperties.ImmediateValue, ImmediateVal); //ImmediateValue holds the offset!
-                                tokens[i] = temp;
-                                continue;
-                            }
-                        }
-
-                        ImmediateVal = MathConversion.ParseImmediate(units[i]);
-                        tokens[i] = new Token((int)EnumTokenTypes.Immediate, units[i]);
-                        tokens[i].AddProperty(EnumTokenProperties.ImmediateValue, ImmediateVal);
-                        continue;
-                    }
-
-                    tokens[i] = new Token((int)EnumTokenTypes.Unkown, units[i]);
-                    continue;
-                }
+                tokens[i] = TokenizeSourceWord(units[i]);
             }
             return true;
+        }
+
+        private string CleanSourceLine(string str)
+        {
+            string replacement = str;
+            replacement = replacement.TrimToFirst("//");
+            replacement = replacement.TrimToFirst("#");
+            return replacement.Trim().Replace(",", "");
+        }
+
+        private string[] SplitSourceLine(string str)
+        {
+            string[] line = str.Split(' ');
+            
+            return line;
+        }
+
+        private Token TokenizeSourceWord(string word)
+        {
+            Token temp = null;
+            if (YKeywords.IsKeyword(word, ref temp))
+            {
+                return temp;
+            }
+            else
+            {
+                //The first instruction can also be a label
+                if (word.EndsWith(':'))
+                {
+                    //label
+                    temp = new Token((int)EnumTokenTypes.Label, word);
+                    return temp;
+                }
+
+                if (word.StartsWith('$'))
+                {
+                    //Can be an immediate, or an address register with offset
+                    Int64 ImmediateVal = 0;
+                    if (word.Contains("("))
+                    {
+                        //Address register with offset, error if no immediate!
+                        int j = word.IndexOf("(");
+                        ImmediateVal = MathConversion.ParseImmediate(word.Substring(0, j - 1));
+                        word = word.Substring(j);
+                        if (YKeywords.IsKeyword(word, ref temp))
+                        {
+                            temp.AddProperty(EnumTokenProperties.ImmediateValue, ImmediateVal); //ImmediateValue holds the offset!
+                            return temp;
+                        }
+                    }
+
+                    ImmediateVal = MathConversion.ParseImmediate(word);
+                    temp = new Token((int)EnumTokenTypes.Immediate, word);
+                    temp.AddProperty(EnumTokenProperties.ImmediateValue, ImmediateVal);
+                    return temp;
+                }
+
+                temp = new Token((int)EnumTokenTypes.Unkown, word);
+                return temp;
+            }
         }
 
         private bool CheckArithmeticOperation(Token[] tkns)
