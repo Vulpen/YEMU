@@ -164,6 +164,15 @@ namespace YLib
             return false;
         }
 
+        public EnumTokenTypes GetTokenType()
+        {
+            if (Properties.ContainsKey(EnumTokenProperties.TokenType))
+            {
+                return (EnumTokenTypes)Properties[EnumTokenProperties.TokenType];
+            }
+            throw new TokenAccessException(this, "Failed on accessing TokenType property.");
+        }
+
         public Token DeepCopy()
         {
             //Ensure a new instance of _text is created

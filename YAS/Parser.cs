@@ -35,7 +35,7 @@ namespace YAS
                 return new Token[] { };
             }
 
-            if (line == null || line.Length == 0 || str == String.Empty)
+            if (line == null || line.Length == 0 || str.Trim() == String.Empty )
             {
                 return new Token[] { };
             }
@@ -46,14 +46,14 @@ namespace YAS
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Failed line on lexing |" + str);
-                return null;
+                return new Token[] { };
             }
             //Parser - Finish populating array of tokens based on their context, and check if the array of tokens makes sense
             if (!ContextParse(ParsedTokens))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Failed on parsing |" + str);
-                return null;
+                return new Token[] { };
             }
             Console.ResetColor();
             Console.WriteLine("Successfully parsed " + str);
@@ -84,10 +84,15 @@ namespace YAS
 
         private string CleanSourceLine(string str)
         {
-            string replacement = str;
-            replacement = replacement.TrimToFirst("//");
-            replacement = replacement.TrimToFirst("#");
-            return replacement.Trim().Replace(",", "");
+            string output = FilterCommentsFromLine(str);
+            output = FilterCommasFromLine(output).Trim();
+            if(str == null)
+            {
+                return String.Empty;
+            }else
+            {
+                return output;
+            }
         }
 
         private string[] SplitSourceLine(string str)
@@ -146,19 +151,17 @@ namespace YAS
         {
             if (tkns.Length == 3)
             {
-                EnumTokenTypes token1Type;
-                EnumTokenTypes token2Type;
-                if (tkns[1].GetTokenType(out token1Type) && tkns[2].GetTokenType(out token2Type))
+                EnumTokenTypes token1Type = tkns[1].GetTokenType();
+                EnumTokenTypes token2Type = tkns[2].GetTokenType();
+                if (token1Type == EnumTokenTypes.Immediate)
                 {
-                    if (token1Type == EnumTokenTypes.Immediate)
-                    {
-                        throw new FoundUnexpectedToken("Illegal immediate used in arithmetic operation");
-                    }
-                    if ((token1Type == EnumTokenTypes.Register) && token2Type == EnumTokenTypes.Register)
-                    {
-                        return true;
-                    }
+                    throw new FoundUnexpectedToken("Illegal immediate used in arithmetic operation");
                 }
+                if ((token1Type == EnumTokenTypes.Register) && token2Type == EnumTokenTypes.Register)
+                {
+                    return true;
+                }
+                
             }
             return false;
         }
