@@ -2,7 +2,7 @@
   "profiles": {
     "YAS": {
       "commandName": "Project",
-      "commandLineArgs": "-i $(SolutionDir)YLib\\Examples\\drawPixel.yas -o $(SolutionDir)YLib\\Examples\\drawPixel.yin"
+      "commandLineArgs": "-i $(SolutionDir)YLib\\Examples\\labelTest.yas -o $(SolutionDir)YLib\\Examples\\labelTest.yin"
     }
   }
 }
