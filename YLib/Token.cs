@@ -17,10 +17,7 @@ namespace YLib
             //TODO Lets do something!
             get
             {
-                EnumTokenTypes var;
-                if (GetTokenType(out var))
-                    return var;
-                return EnumTokenTypes.Unkown;
+                return GetTokenType();
             }
         }
 
@@ -149,18 +146,6 @@ namespace YLib
                 return true;
             }
             throw new TokenAccessException(this, "Failed on accessing Instruction property.");
-            return false;
-        }
-
-        public bool GetTokenType(out EnumTokenTypes val)
-        {
-            val = EnumTokenTypes.Unkown;
-            if (Properties.ContainsKey(EnumTokenProperties.TokenType))
-            {
-                val = (EnumTokenTypes)Properties[EnumTokenProperties.TokenType];
-                return true;
-            }
-            throw new TokenAccessException(this, "Failed on accessing TokenType property.");
             return false;
         }
 

@@ -35,7 +35,7 @@ namespace YAS
                 return new Token[] { };
             }
 
-            if (line == null || line.Length == 0 || str.Trim() == String.Empty )
+            if (line == null || line.Length == 0 || str.Trim() == String.Empty)
             {
                 return new Token[] { };
             }
@@ -86,10 +86,11 @@ namespace YAS
         {
             string output = FilterCommentsFromLine(str);
             output = FilterCommasFromLine(output).Trim();
-            if(str == null)
+            if (str == null)
             {
                 return String.Empty;
-            }else
+            }
+            else
             {
                 return output;
             }
@@ -98,7 +99,7 @@ namespace YAS
         private string[] SplitSourceLine(string str)
         {
             string[] line = str.Split(' ');
-            
+
             return line;
         }
 
@@ -161,7 +162,7 @@ namespace YAS
                 {
                     return true;
                 }
-                
+
             }
             return false;
         }
@@ -170,13 +171,10 @@ namespace YAS
         {
             if (tkns.Length == 2)
             {
-                EnumTokenTypes token1Type;
-                if (tkns[1].GetTokenType(out token1Type))
+                EnumTokenTypes token1Type = tkns[1].GetTokenType();
+                if (token1Type == EnumTokenTypes.Immediate || token1Type == EnumTokenTypes.Label || token1Type == EnumTokenTypes.Unkown)
                 {
-                    if (token1Type == EnumTokenTypes.Immediate || token1Type == EnumTokenTypes.Label || token1Type == EnumTokenTypes.Unkown)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             return false;
@@ -186,14 +184,11 @@ namespace YAS
         {
             if (tkns.Length == 3)
             {
-                EnumTokenTypes token1Type;
-                EnumTokenTypes token2Type;
-                if (tkns[1].GetTokenType(out token1Type) && tkns[2].GetTokenType(out token2Type))
+                EnumTokenTypes token1Type = tkns[1].GetTokenType();
+                EnumTokenTypes token2Type = tkns[2].GetTokenType();
+                if (token1Type == type1 && token2Type == type2)
                 {
-                    if (token1Type == type1 && token2Type == type2)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             return false;
@@ -203,14 +198,11 @@ namespace YAS
         {
             if (tkns.Length != 2) return false;
 
-            EnumTokenTypes secondTokenType;
-            if (tkns[1].GetTokenType(out secondTokenType))
+            EnumTokenTypes secondTokenType = tkns[1].GetTokenType();
+            if (secondTokenType == EnumTokenTypes.Immediate)
             {
-                if (secondTokenType == EnumTokenTypes.Immediate)
-                {
-                    //Add a check to see if interrupt is valid.
-                    return true;
-                }
+                //Add a check to see if interrupt is valid.
+                return true;
             }
 
             return false;
@@ -291,11 +283,7 @@ namespace YAS
         private bool ContextParse(Token[] tokens_in)
         {
             Token firstToken = tokens_in[0];
-            EnumTokenTypes CurrentTokenType;
-            if (!firstToken.GetTokenType(out CurrentTokenType))
-            {
-                return false;
-            }
+            EnumTokenTypes CurrentTokenType = firstToken.GetTokenType();
             switch (CurrentTokenType)
             {
                 case (EnumTokenTypes.Instruction):
